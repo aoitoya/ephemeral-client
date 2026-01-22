@@ -1,12 +1,17 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Box } from "@mui/joy";
 import Sidebar from "@/components/layout/Sidebar";
+import { useSocketEvent } from "@/hooks/useSocket";
 
 export const Route = createFileRoute("/_app")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  useSocketEvent("notify:new-connection-req", (p: any) => {
+    console.log(p);
+  });
+
   return (
     <Box
       sx={{

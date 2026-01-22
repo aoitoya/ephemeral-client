@@ -4,12 +4,9 @@ import { useGetMe } from "@/hooks/useUsers";
 import UserList from "./UserList";
 import ChatView from "./ChatView";
 import type { Message } from "./types";
-import { useSocket } from "@/hooks/useSocket";
+import { useSocket, useSocketEvent } from "@/hooks/useSocket";
 import type { User } from "@/services/api/user.api";
-import {
-  useConnectionsFetch,
-  useOnlineConnectionsFetch,
-} from "@/hooks/useConnection";
+import { useConnectionsFetch } from "@/hooks/useConnection";
 
 export default function Messages() {
   const { socket } = useSocket();
@@ -34,48 +31,26 @@ export default function Messages() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!socket) return;
+  useSocketEvent("chat:message", (payload: Message) => {
+    setMessages((prev) => [...prev, payload]);
+  });
 
-    const handleMessage = (payload: Message) => {
-      setMessages((prev) => [...prev, payload]);
-    };
-
-    const handleMessages = (payload: Message[]) => {
-      console.log("payload", payload);
-      setMessages((prev) => [...payload, ...prev]);
-    };
-
-    socket.on("chat:message", handleMessage);
-    socket.on("chat:messages", handleMessages);
-
-    return () => {
-      socket.off("chat:message", handleMessage);
-    };
-  }, [socket]);
+  useSocketEvent("chat:messages", (payload: Message[]) => {
+    setMessages((prev) => [...payload, ...prev]);
+  });
 
   if (!currentUser) {
     return null;
   }
 
-  console.log(messages);
-
   const sendMessage = () => {
     if (!(socket && selectedUser && message.trim())) return;
-
-    // const newMessage: Message = {
-    //   id: Date.now().toString(),
-    //   content: message,
-    //   from: currentUser,
-    //   createdAt: "-",
-    // };
 
     socket.emit("chat:message", {
       content: message,
       room: { type: "single", id: selectedUser.id },
     });
 
-    // setMessages((prev) => [...prev, newMessage]);
     setMessage("");
   };
 

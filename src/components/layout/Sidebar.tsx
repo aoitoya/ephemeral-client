@@ -1,15 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import {
   Box,
-  Typography,
   List,
   ListItem,
   ListItemButton,
+  Typography,
   useTheme,
 } from "@mui/joy";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import PeopleOutlineRoundedIcon from "@mui/icons-material/PeopleOutlineRounded";
+import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 
 const ListItemIcon = ({ children }: { children: React.ReactNode }) => (
   <Box component="span" sx={{ display: "inline-flex", mr: 1 }}>
@@ -39,25 +40,31 @@ const Sidebar = () => {
         flexDirection: "column",
       }}
     >
-      <Typography
-        level="h4"
-        component="h1"
+      <Box
         sx={{
-          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           mb: 3,
           px: 2,
-          py: 1,
-          borderRadius: "sm",
-          color: "primary.plainColor",
         }}
       >
-        Ephemeral
-      </Typography>
+        <Typography
+          level="h4"
+          component="h1"
+          sx={{
+            fontWeight: "bold",
+            color: "primary.plainColor",
+          }}
+        >
+          Ephemeral
+        </Typography>
+      </Box>
 
       <List sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}>
         <ListItem>
           <Link to="/feed" style={{ width: "100%", textDecoration: "none" }}>
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <ListItemButton
                 variant={isActive ? "soft" : "plain"}
                 color={isActive ? "primary" : "neutral"}
@@ -82,7 +89,7 @@ const Sidebar = () => {
             to="/messeges"
             style={{ width: "100%", textDecoration: "none" }}
           >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <ListItemButton
                 variant={isActive ? "soft" : "plain"}
                 color={isActive ? "primary" : "neutral"}
@@ -107,7 +114,7 @@ const Sidebar = () => {
             to="/connections"
             style={{ width: "100%", textDecoration: "none" }}
           >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <ListItemButton
                 variant={isActive ? "soft" : "plain"}
                 color={isActive ? "primary" : "neutral"}
@@ -122,6 +129,31 @@ const Sidebar = () => {
                   <PeopleOutlineRoundedIcon />
                 </ListItemIcon>
                 <ListItemContent>Connections</ListItemContent>
+              </ListItemButton>
+            )}
+          </Link>
+        </ListItem>
+
+        <ListItem>
+          <Link
+            to="/notifications"
+            style={{ width: "100%", textDecoration: "none" }}
+          >
+            {({ isActive }: { isActive: boolean }) => (
+              <ListItemButton
+                variant={isActive ? "soft" : "plain"}
+                color={isActive ? "primary" : "neutral"}
+                sx={{
+                  borderRadius: "8px",
+                  "&:hover": {
+                    backgroundColor: theme.vars.palette.primary.softHoverBg,
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <NotificationsRoundedIcon />
+                </ListItemIcon>
+                <ListItemContent>Notifications</ListItemContent>
               </ListItemButton>
             )}
           </Link>

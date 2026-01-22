@@ -11,8 +11,7 @@ import { CreatePost } from "./CreatePost";
 import { usePosts } from "@/hooks/usePosts";
 
 export function Feed() {
-  const { posts, isLoading, error, createPost, isCreating, handleVote } =
-    usePosts();
+  const { posts, isLoading, error, createPost, isCreating } = usePosts();
 
   if (isLoading) {
     return (
@@ -84,7 +83,7 @@ export function Feed() {
                   transition: "transform 0.2s, box-shadow 0.2s",
                 }}
               >
-                <PostCard post={post} onVote={handleVote} />
+                <PostCard post={post} />
               </Box>
             ))
           ) : (

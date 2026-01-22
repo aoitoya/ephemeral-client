@@ -22,10 +22,11 @@ import { ConnectionRequestDialog } from "@/components/messages/ConnectionRequest
 // Types
 import type { Post, Comment } from "@/services/api/post.api";
 import { useConnectionMutations } from "@/hooks/useConnection";
+import { useVotePost } from "@/hooks/usePosts";
 
 interface PostCardProps {
   post: Post;
-  onVote: (params: { postId: string; vote: "upvote" | "downvote" }) => void;
+  // onVote: (params: { postId: string; vote: "upvote" | "downvote" }) => void;
   onCommentVote?: (params: {
     commentId: string;
     vote: "upvote" | "downvote";
@@ -35,9 +36,10 @@ interface PostCardProps {
   isLoadingComments?: boolean;
 }
 
-export function PostCard({ post, onVote }: PostCardProps) {
+export function PostCard({ post }: PostCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false);
+  const { mutateAsync: votePost, isPending: isVoting } = useVotePost();
   const connection = useConnectionMutations();
 
   const handleSendConnectionRequest = async () => {
@@ -141,9 +143,10 @@ export function PostCard({ post, onVote }: PostCardProps) {
           {/* Vote Buttons */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton
+              disabled={isVoting}
               variant={post.userVote === "upvote" ? "soft" : "plain"}
               color={post.userVote === "upvote" ? "danger" : "neutral"}
-              onClick={() => onVote({ postId: post.id, vote: "upvote" })}
+              onClick={() => votePost({ postId: post.id, vote: "upvote" })}
               size="sm"
             >
               <Favorite />
@@ -154,9 +157,10 @@ export function PostCard({ post, onVote }: PostCardProps) {
             </Typography>
 
             <IconButton
+              disabled={isVoting}
               variant={post.userVote === "downvote" ? "soft" : "plain"}
               color={post.userVote === "downvote" ? "primary" : "neutral"}
-              onClick={() => onVote({ postId: post.id, vote: "downvote" })}
+              onClick={() => votePost({ postId: post.id, vote: "downvote" })}
               size="sm"
             >
               <HeartBroken />

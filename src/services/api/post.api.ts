@@ -38,7 +38,13 @@ export const postAPI = {
     const response = await apiClient.get("/posts");
     return response.data;
   },
-  votePost: async (postId: string, vote: "upvote" | "downvote") => {
+  votePost: async ({
+    postId,
+    vote,
+  }: {
+    postId: string;
+    vote: "upvote" | "downvote";
+  }) => {
     const response = await apiClient.post(`/posts/vote`, {
       postId,
       type: vote,
