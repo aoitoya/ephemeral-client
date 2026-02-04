@@ -19,7 +19,7 @@ interface ChatViewProps {
   messages: Message[];
   currentUserId: string;
   message: string;
-  onMessageChange: (value: string) => void;
+  onMessageChange: (_value: string) => void;
   onSendMessage: () => void;
   onBack?: () => void;
   isMobile?: boolean;

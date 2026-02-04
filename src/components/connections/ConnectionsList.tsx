@@ -9,18 +9,8 @@ import {
   Skeleton,
   Typography,
 } from "@mui/joy";
-import { useConnectionsFetch } from "@/hooks/useConnection";
+import { useConnectionsFetch, type Connection } from "@/hooks/useConnection";
 import ListItemContent from "@mui/joy/ListItemContent";
-
-type Connection = {
-  id: string;
-  user: {
-    id: string;
-    username: string;
-  };
-  status: string;
-  createdAt: string;
-};
 
 export default function ConnectionsList() {
   const { data: connections, isLoading } = useConnectionsFetch();
@@ -59,7 +49,7 @@ export default function ConnectionsList() {
     <Card variant="outlined">
       <CardContent>
         <List>
-          {connections.map((connection: Connection, index: number) => (
+          {connections.map((connection: Connection) => (
             <ListItem key={connection.id}>
               <ListItemButton
                 component="a"

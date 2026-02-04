@@ -27,11 +27,11 @@ import { useVotePost } from "@/hooks/usePosts";
 interface PostCardProps {
   post: Post;
   // onVote: (params: { postId: string; vote: "upvote" | "downvote" }) => void;
-  onCommentVote?: (params: {
+  onCommentVote?: (_params: {
     commentId: string;
     vote: "upvote" | "downvote";
   }) => void;
-  onAddComment?: (postId: string, content: string) => Promise<void>;
+  onAddComment?: (_postId: string, _content: string) => Promise<void>;
   comments?: Comment[];
   isLoadingComments?: boolean;
 }

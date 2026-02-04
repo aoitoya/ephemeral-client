@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Card, Typography, Textarea, Button } from "@mui/joy";
 
 interface CreatePostProps {
-  onSubmit: (content: string) => Promise<void>;
+  onSubmit: (_content: string) => Promise<void>;
   isSubmitting: boolean;
 }
 

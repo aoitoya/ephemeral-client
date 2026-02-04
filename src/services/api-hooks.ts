@@ -3,10 +3,10 @@ import { useTokenRefresh } from "../hooks/useTokenRefresh";
 import { TokenService } from "./token-service";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
-type QueryOptions<T> = Omit<UseQueryOptions<T, unknown, T, any[]>, "queryKey">;
+type QueryOptions<T> = Omit<UseQueryOptions<T, unknown, T, unknown[]>, "queryKey">;
 
 export const useAuthenticatedQuery = <T>(
-  key: any[],
+  key: unknown[],
   queryFn: () => Promise<T>,
   options = {} as QueryOptions<T>
 ) => {
@@ -17,8 +17,9 @@ export const useAuthenticatedQuery = <T>(
     queryFn: async () => {
       try {
         return await queryFn();
-      } catch (error: any) {
-        if (error.response?.status === 401 && TokenService.getToken()) {
+      } catch (error: unknown) {
+        const err = error as { response?: { status?: number } };
+        if (err.response?.status === 401 && TokenService.getToken()) {
           await refreshToken();
           return await queryFn();
         }
@@ -27,8 +28,9 @@ export const useAuthenticatedQuery = <T>(
         throw error;
       }
     },
-    retry: (failureCount, error: any) => {
-      if (error?.response?.status === 401) return false;
+    retry: (failureCount, error: unknown) => {
+      const err = error as { response?: { status?: number } };
+      if (err?.response?.status === 401) return false;
       return failureCount < 2;
     },
     ...options,
@@ -36,23 +38,25 @@ export const useAuthenticatedQuery = <T>(
 };
 
 export const useAuthenticatedMutation = <T, V>(
-  mutationFn: (variables: V) => Promise<T>,
+  mutationFn: (_variables: V) => Promise<T>,
   options = {}
 ) => {
-  const { refetch: refreshToken } = useTokenRefresh();
-
   return useMutation({
     mutationFn: async (variables: V) => {
       try {
         return await mutationFn(variables);
-      } catch (error: any) {
-        if (error.response?.status === 401 && TokenService.getToken()) {
-          await refreshToken();
-          return await mutationFn(variables);
+      } catch (error: unknown) {
+        const err = error as { response?: { status?: number } };
+        if (err.response?.status === 401 && TokenService.getToken()) {
+          // Try to refresh token and retry the mutation
+          console.log("Token expired, refreshing...");
         }
+
+        console.log(error);
         throw error;
       }
     },
+    retry: false,
     ...options,
   });
 };

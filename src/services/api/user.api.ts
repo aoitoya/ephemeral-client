@@ -3,6 +3,8 @@ import { apiClient } from "../api-client";
 export interface User {
   id: string;
   username: string;
+  isOnline?: boolean;
+  unreadCount?: number;
 }
 
 export const userAPI = {

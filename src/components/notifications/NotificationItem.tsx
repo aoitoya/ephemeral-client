@@ -1,12 +1,12 @@
-import { Box, Typography, List, ListItem, ListItemContent, Chip, IconButton } from '@mui/joy';
+import { Box, Typography, ListItem, ListItemContent, Chip, IconButton } from '@mui/joy';
 import { formatDistanceToNow } from 'date-fns';
 import { Delete as DeleteIcon, Done as DoneIcon } from '@mui/icons-material';
-import { Notification } from '@/hooks/useNotifications';
+import { type Notification } from '@/hooks/useNotifications';
 
 interface NotificationItemProps {
   notification: Notification;
-  onMarkAsRead: (id: string) => void;
-  onDelete: (id: string) => void;
+  onMarkAsRead: (_id: string) => void;
+  onDelete: (_id: string) => void;
 }
 
 export function NotificationItem({ notification, onMarkAsRead, onDelete }: NotificationItemProps) {

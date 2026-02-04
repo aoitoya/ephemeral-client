@@ -17,7 +17,7 @@ const buttonStyles = {
   gap: "8px",
   transition: "all 0.3s ease",
   boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-  position: "relative" as "relative",
+  position: "relative" as const,
   overflow: "hidden",
 };
 

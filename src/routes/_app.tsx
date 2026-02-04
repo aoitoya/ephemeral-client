@@ -8,8 +8,8 @@ export const Route = createFileRoute("/_app")({
 });
 
 function RouteComponent() {
-  useSocketEvent("notify:new-connection-req", (p: any) => {
-    console.log(p);
+  useSocketEvent("notify:new-connection-req", (_p: unknown) => {
+    console.log(_p);
   });
 
   return (

@@ -143,7 +143,7 @@ export default function ConnectionRequests() {
               No pending connection requests
             </Typography>
             <Typography level="body-sm" color="neutral">
-              When someone wants to connect with you, you'll see their request
+              When someone wants to connect with you, you&apos;ll see their request
               here
             </Typography>
           </Box>

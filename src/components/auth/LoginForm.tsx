@@ -16,9 +16,7 @@ interface LoginFormValues {
   password: string;
 }
 
-interface LoginFormProps {
-  onSwitchToSignup: () => void;
-}
+
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -27,7 +25,7 @@ const loginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
+export function LoginForm() {
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
 
@@ -43,10 +41,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
 
   return (
     <Box>
-      <Typography
-        level="h3"
-        sx={{ mb: 3, textAlign: "center", color: "#667eea" }}
-      >
+      <Typography level="h3" sx={{ mb: 3, textAlign: "center", color: "text.primary" }}>
         Welcome Back
       </Typography>
 
@@ -68,7 +63,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
               <ErrorMessage name="email">
                 {(msg) => (
                   <Typography
-                    sx={{ color: "red", fontSize: "0.8rem", mt: 0.5 }}
+                    sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
                   >
                     {msg}
                   </Typography>
@@ -88,7 +83,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
               <ErrorMessage name="password">
                 {(msg) => (
                   <Typography
-                    sx={{ color: "red", fontSize: "0.8rem", mt: 0.5 }}
+                    sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
                   >
                     {msg}
                   </Typography>
@@ -101,10 +96,10 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
               fullWidth
               disabled={isSubmitting}
               sx={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                bgcolor: "primary.solidBg",
+                borderRadius: "md",
                 "&:hover": {
-                  background:
-                    "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  bgcolor: "primary.solidHoverBg",
                 },
                 mb: 2,
               }}
@@ -115,16 +110,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
         )}
       </Formik>
 
-      <Typography sx={{ textAlign: "center", fontSize: "sm" }}>
-        Don't have an account?{" "}
-        <Button
-          variant="plain"
-          onClick={onSwitchToSignup}
-          sx={{ fontSize: "sm", color: "#667eea" }}
-        >
-          Sign Up
-        </Button>
-      </Typography>
+
     </Box>
   );
 }

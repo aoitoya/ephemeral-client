@@ -10,8 +10,9 @@ export const useTokenRefresh = () => {
         const data = await authAPI.refreshToken();
         TokenService.setToken(data.token);
         return data;
-      } catch (error: any) {
-        if (error.response?.status === 401) {
+      } catch (error: unknown) {
+        const err = error as { response?: { status?: number } };
+        if (err.response?.status === 401) {
           TokenService.clearToken();
         }
         throw error;

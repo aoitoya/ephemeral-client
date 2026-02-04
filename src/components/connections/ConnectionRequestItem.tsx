@@ -10,8 +10,8 @@ import type { Connection } from "@/services/api/connection.api";
 
 interface ConnectionRequestItemProps {
   request: Connection;
-  onAccept: (requestId: string) => void;
-  onReject: (requestId: string) => void;
+  onAccept: (_requestId: string) => void;
+  onReject: (_requestId: string) => void;
   isAccepting?: boolean;
   isRejecting?: boolean;
 }

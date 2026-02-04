@@ -1,39 +1,132 @@
-import { useState } from "react";
+import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { AuthModal } from "../components/auth/AuthModal";
-import { HeroSection } from "../components/landing/HeroSection";
-import { FeaturesSection } from "../components/landing/FeaturesSection";
-import { HowItWorks } from "../components/landing/HowItWorks";
-import { CTASection } from "../components/landing/CTASection";
-// import { Footer } from "../components/landing/Footer";
+import { Box, Typography, Tabs, TabList, Tab, TabPanel } from "@mui/joy";
+import { LoginForm } from "../components/auth/LoginForm";
+import { SignupForm } from "../components/auth/SignupForm";
 
 export const Route = createFileRoute("/_index")({
   component: HomePage,
 });
 
 function HomePage() {
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-
-  const openAuthModal = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setAuthModalOpen(true);
-  };
+  const [selectedTab, setSelectedTab] = React.useState(0);
 
   return (
-    <div className="ephemeral-landing">
-      <HeroSection onGetStarted={() => openAuthModal("signup")} />
-      <FeaturesSection />
-      <HowItWorks />
-      <CTASection onGetStarted={() => openAuthModal("signup")} />
-      {/* <Footer /> */}
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: { xs: 4, md: 8 },
+        flexDirection: { xs: "column", md: "row" },
+        p: { xs: 2, md: 4 },
+        bgcolor: "background.body", // Use theme body background
+      }}
+    >
+      {/* Left side - Hero Text */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: { xs: "center", md: "left" },
+          maxWidth: { md: "450px" },
+          p: 4,
+        }}
+      >
+        <Typography
+          level="h1"
+          sx={{
+            color: "text.primary", // Ensure good contrast
+            fontWeight: 700,
+            fontSize: { xs: "2.25rem", md: "3rem" },
+            lineHeight: 1.2,
+          }}
+        >
+          a little uncomplicated social platform
+        </Typography>
+      </Box>
 
-      <AuthModal
-        open={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        mode={authMode}
-        onModeChange={setAuthMode}
-      />
-    </div>
+      {/* Right side - Login/Signup Form */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          maxWidth: { xs: "100%", sm: "400px" },
+          p: 4, // Increased padding
+          borderRadius: "xl",
+          bgcolor: "background.surface",
+          border: "1px solid",
+          borderColor: "neutral.outlinedBorder", // Use theme border color
+          boxShadow: "sm", // Subtle shadow for depth
+        }}
+      >
+        <Tabs
+          value={selectedTab}
+          onChange={(_, newValue) => setSelectedTab(newValue as number)}
+          aria-label="Auth tabs"
+          sx={{
+            width: "100%",
+            borderRadius: "lg",
+            bgcolor: "background.level1", // Subtle background for the tab container
+            p: 1, // Padding inside the tab container
+          }}
+        >
+          <TabList
+            variant="plain"
+            sx={{
+              "--List-gap": "0px",
+              "--List-padding": "0px",
+              "--ListItem-minHeight": "40px",
+              borderRadius: "lg",
+            }}
+          >
+            <Tab
+              disableIndicator
+              sx={{
+                flex: 1,
+                borderRadius: "md",
+                "&.Mui-selected": {
+                  bgcolor: "background.surface",
+                  boxShadow: "xs", // More subtle shadow for selected tab
+                },
+                "&:not(.Mui-selected)": {
+                  color: "text.secondary", // Make unselected tabs less prominent
+                },
+              }}
+            >
+              Login
+            </Tab>
+            <Tab
+              disableIndicator
+              sx={{
+                flex: 1,
+                borderRadius: "md",
+                "&.Mui-selected": {
+                  bgcolor: "background.surface",
+                  boxShadow: "xs",
+                },
+                "&:not(.Mui-selected)": {
+                  color: "text.secondary",
+                },
+              }}
+            >
+              Sign Up
+            </Tab>
+          </TabList>
+          <TabPanel value={0} sx={{ p: 3 }}>
+            <LoginForm />
+          </TabPanel>
+          <TabPanel value={1} sx={{ p: 3 }}>
+            <SignupForm />
+          </TabPanel>
+        </Tabs>
+      </Box>
+    </Box>
   );
 }

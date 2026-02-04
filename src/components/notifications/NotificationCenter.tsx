@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Chip,
   IconButton,
   Button,
@@ -115,9 +113,7 @@ export function NotificationCenter() {
     setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
-  const clearAllRead = () => {
-    setNotifications((prev) => prev.filter((notif) => !notif.read));
-  };
+
 
   const formatTimestamp = (date: Date) => {
     const now = new Date();

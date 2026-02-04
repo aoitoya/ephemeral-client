@@ -3,18 +3,18 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 
+
 interface AuthModalProps {
   open: boolean;
   onClose: () => void;
   mode: "login" | "signup";
-  onModeChange: (mode: "login" | "signup") => void;
 }
+
 
 export function AuthModal({
   open,
   onClose,
-  mode,
-  onModeChange,
+  mode: currentMode,
 }: AuthModalProps) {
   return (
     <Modal
@@ -51,10 +51,10 @@ export function AuthModal({
         </IconButton>
 
         <Box sx={{ mt: 2 }}>
-          {mode === "login" ? (
-            <LoginForm onSwitchToSignup={() => onModeChange("signup")} />
+          {currentMode === "login" ? (
+            <LoginForm />
           ) : (
-            <SignupForm onSwitchToLogin={() => onModeChange("login")} />
+            <SignupForm />
           )}
         </Box>
       </Box>
