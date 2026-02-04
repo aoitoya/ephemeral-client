@@ -2,7 +2,9 @@ import {
   useAuthenticatedMutation,
   useAuthenticatedQuery,
 } from "@/services/api-hooks";
-import { connectionAPI } from "@/services/api/connection.api";
+import { connectionAPI, type Connection, type User } from "@/services/api/connection.api";
+
+export type { Connection, User };
 
 export const useConnectionRequest = () => {
   const mutation = useAuthenticatedMutation(
@@ -31,13 +33,13 @@ export const useConnectionReject = () => {
 export const useConnectionsFetch = (params?: {
   status?: "pending" | "active" | "blocked" | "cancelled" | "rejected";
 }) => {
-  return useAuthenticatedQuery(["connections", params], () =>
+  return useAuthenticatedQuery<Connection[]>(["connections", params], () =>
     connectionAPI.getConnections(params),
   );
 };
 
 export const useOnlineConnectionsFetch = () => {
-  return useAuthenticatedQuery(["connections", "online"], () =>
+  return useAuthenticatedQuery<User[]>(["connections", "online"], () =>
     connectionAPI.getOnlineConnections(),
   );
 };

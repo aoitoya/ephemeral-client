@@ -17,7 +17,7 @@ export interface Notification {
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (!socket) return;
@@ -36,7 +36,7 @@ export function useNotifications() {
 
     // Register socket event listeners
     socket.on('notification:new', handleNewNotification);
-    socket.on('notification:connection_request', (data: any) => {
+    socket.on('notification:connection_request', (data: { fromUsername: string }) => {
       handleNewNotification({
         type: 'connection',
         title: 'New Connection Request',
@@ -46,7 +46,7 @@ export function useNotifications() {
       });
     });
 
-    socket.on('notification:like', (data: any) => {
+    socket.on('notification:like', (data: { fromUsername: string; postId: string }) => {
       handleNewNotification({
         type: 'like',
         title: 'Your post is getting love',
@@ -56,7 +56,7 @@ export function useNotifications() {
       });
     });
 
-    socket.on('notification:message', (data: any) => {
+    socket.on('notification:message', (data: { fromUsername: string; messagePreview: string }) => {
       handleNewNotification({
         type: 'message',
         title: 'New message',
@@ -67,7 +67,7 @@ export function useNotifications() {
       });
     });
 
-    socket.on('notification:security', (data: any) => {
+    socket.on('notification:security', (data: { message: string }) => {
       handleNewNotification({
         type: 'security',
         title: 'Security Alert',

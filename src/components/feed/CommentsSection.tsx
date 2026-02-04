@@ -29,7 +29,7 @@ interface CommentsSectionProps {
 
 interface CommentItemProps {
   comment: Comment;
-  onVote?: (params: { commentId: string; vote: "upvote" | "downvote" }) => void;
+  onVote?: (_params: { commentId: string; vote: "upvote" | "downvote" }) => void;
 }
 
 const CommentItem = ({ comment }: CommentItemProps) => {

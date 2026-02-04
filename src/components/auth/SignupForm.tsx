@@ -17,9 +17,7 @@ interface SignupFormValues {
   confirmPassword: string;
 }
 
-interface SignupFormProps {
-  onSwitchToLogin: () => void;
-}
+
 
 const signupSchema = Yup.object().shape({
   username: Yup.string()
@@ -43,7 +41,7 @@ const signupSchema = Yup.object().shape({
     .required("Confirm password is required"),
 });
 
-export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
+export function SignupForm() {
   const { mutateAsync: register } = useRegister();
   const navigate = useNavigate();
 
@@ -60,10 +58,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
 
   return (
     <Box>
-      <Typography
-        level="h3"
-        sx={{ mb: 3, textAlign: "center", color: "#667eea" }}
-      >
+      <Typography level="h3" sx={{ mb: 3, textAlign: "center", color: "text.primary" }}>
         Join Ephemeral
       </Typography>
 
@@ -86,7 +81,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
               <ErrorMessage name="username">
                 {(msg) => (
                   <Typography
-                    sx={{ color: "red", fontSize: "0.8rem", mt: 0.5 }}
+                    sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
                   >
                     {msg}
                   </Typography>
@@ -106,7 +101,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
               <ErrorMessage name="password">
                 {(msg) => (
                   <Typography
-                    sx={{ color: "red", fontSize: "0.8rem", mt: 0.5 }}
+                    sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
                   >
                     {msg}
                   </Typography>
@@ -128,7 +123,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
               <ErrorMessage name="confirmPassword">
                 {(msg) => (
                   <Typography
-                    sx={{ color: "red", fontSize: "0.8rem", mt: 0.5 }}
+                    sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
                   >
                     {msg}
                   </Typography>
@@ -141,10 +136,10 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
               fullWidth
               disabled={isSubmitting}
               sx={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                bgcolor: "primary.solidBg",
+                borderRadius: "md",
                 "&:hover": {
-                  background:
-                    "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  bgcolor: "primary.solidHoverBg",
                 },
                 mb: 2,
               }}
@@ -155,16 +150,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         )}
       </Formik>
 
-      <Typography sx={{ textAlign: "center", fontSize: "sm" }}>
-        Already have an account?{" "}
-        <Button
-          variant="plain"
-          onClick={onSwitchToLogin}
-          sx={{ fontSize: "sm", color: "#667eea" }}
-        >
-          Sign In
-        </Button>
-      </Typography>
+
     </Box>
   );
 }

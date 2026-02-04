@@ -48,7 +48,7 @@ export const useCurrentUser = () => {
     queryKey: authKeys.user(),
     queryFn: authAPI.getCurrentUser,
     enabled: !!TokenService.getToken(),
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: { response?: { status?: number } }) => {
       if (error?.response?.status === 401) return false;
       return failureCount < 3;
     },

@@ -13,7 +13,7 @@ import {
 interface UserListProps {
   users: User[];
   selectedUserId?: string;
-  onSelectUser: (user: User) => void;
+  onSelectUser: (_user: User) => void;
 }
 
 export default function UserList({

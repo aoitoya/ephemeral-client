@@ -6,9 +6,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Textarea,
   Typography,
-  CircularProgress,
 } from "@mui/joy";
 
 interface ConnectionRequestDialogProps {
@@ -48,8 +46,8 @@ export function ConnectionRequestDialog({
             connect and message each other.
           </Typography>
           <Typography level="body-xs" color="neutral" sx={{ mb: 2 }}>
-            You'll be able to see each other's posts and message if they accept
-            your request.
+            You will be able to see each other’s posts and message if they
+            accept your request.
           </Typography>
         </DialogContent>
         <DialogActions>

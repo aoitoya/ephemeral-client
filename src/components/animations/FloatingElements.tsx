@@ -45,7 +45,7 @@ interface MagneticButtonProps {
 }
 
 export function MagneticButton({ children, strength = 0.3 }: MagneticButtonProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const button = buttonRef.current;

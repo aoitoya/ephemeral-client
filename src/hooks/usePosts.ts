@@ -29,7 +29,7 @@ export const usePosts = () => {
     return response;
   });
 
-  const createPostMutation = useAuthenticatedMutation(
+  const createPostMutation = useAuthenticatedMutation<void, string>(
     (text: string) => {
       const data: CreatePost = { content: text, topics: [] };
 

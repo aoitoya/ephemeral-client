@@ -1,14 +1,13 @@
 import { apiClient } from "../api-client";
 
-interface User {
-  id: string;
-  username: string;
-}
+import { type User } from "./user.api";
+export type { User } from "./user.api";
 
 export interface Connection {
   id: string;
   createdAt: string;
-  pending: string;
+  pending?: string;
+  status?: string;
   user: User;
 }
 
