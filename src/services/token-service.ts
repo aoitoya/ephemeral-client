@@ -12,6 +12,9 @@ class TokenService {
   static getToken(): string | null {
     if (this.token) return this.token;
     this.token = localStorage.getItem("token");
+    if (this.token) {
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${this.token}`;
+    }
     return this.token;
   }
 

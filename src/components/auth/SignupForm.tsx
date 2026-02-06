@@ -17,15 +17,13 @@ interface SignupFormValues {
   confirmPassword: string;
 }
 
-
-
 const signupSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be less than 20 characters")
     .matches(
       /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
+      "Username can only contain letters, numbers, and underscores",
     )
     .required("Username is required"),
 
@@ -33,7 +31,7 @@ const signupSchema = Yup.object().shape({
     .min(6, "Password must be at least 6 characters")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
     )
     .required("Password is required"),
   confirmPassword: Yup.string()
@@ -58,10 +56,6 @@ export function SignupForm() {
 
   return (
     <Box>
-      <Typography level="h3" sx={{ mb: 3, textAlign: "center", color: "text.primary" }}>
-        Join Ephemeral
-      </Typography>
-
       <Formik
         initialValues={initialValues}
         validationSchema={signupSchema}
@@ -149,8 +143,6 @@ export function SignupForm() {
           </Form>
         )}
       </Formik>
-
-
     </Box>
   );
 }
