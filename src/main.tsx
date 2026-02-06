@@ -7,6 +7,7 @@ import { CssVarsProvider, extendTheme } from "@mui/joy/styles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import "./styles/globals.css";
 import { SocketProvider } from "./hooks/useSocket";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Create a new query client instance
 const queryClient = new QueryClient();
@@ -115,15 +116,15 @@ const theme = extendTheme({
     sm: "0.875rem",
     md: "1rem",
     lg: "1.125rem",
-     xl: "1.25rem",
-     xl2: "1.5rem",
-     xl3: "1.875rem",
-     // "4xl": "2.25rem",
-     // "5xl": "3rem",
-     // "6xl": "3.75rem",
-     // "7xl": "4.5rem",
-     // "8xl": "6rem",
-     // "9xl": "8rem",
+    xl: "1.25rem",
+    xl2: "1.5rem",
+    xl3: "1.875rem",
+    // "4xl": "2.25rem",
+    // "5xl": "3rem",
+    // "6xl": "3.75rem",
+    // "7xl": "4.5rem",
+    // "8xl": "6rem",
+    // "9xl": "8rem",
   },
   // borderRadius: {
   //   sm: "0.25rem",
@@ -156,7 +157,8 @@ if (!rootElement.innerHTML) {
             <RouterProvider router={router} />
           </SocketProvider>
         </CssVarsProvider>
+        <ReactQueryDevtools />
       </QueryClientProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 }

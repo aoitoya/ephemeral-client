@@ -2,7 +2,7 @@ import {
   useAuthenticatedMutation,
   useAuthenticatedQuery,
 } from "@/services/api-hooks";
-import { commentAPI } from "@/services/api/post.api";
+import { commentAPI, type Comment } from "@/services/api/post.api";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useCommentsFetcher = (
@@ -26,13 +26,59 @@ export const useCommentsFetcher = (
 export const useCommentsVoter = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useAuthenticatedMutation(commentAPI.voteComment, {
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+  return useAuthenticatedMutation(commentAPI.voteComment, {
+    onMutate: async ({
+      commentId,
+      vote,
+    }: {
+      commentId: string;
+      vote: "upvote" | "downvote";
+    }) => {
+      await queryClient.cancelQueries({ queryKey: ["comments"] });
+
+      const previousQueries = queryClient.getQueriesData<Comment[]>({
+        queryKey: ["comments"],
+      });
+
+      queryClient.setQueriesData<Comment[]>(
+        { queryKey: ["comments"] },
+        (old) => {
+          if (!old) return [];
+          return old.map((comment) => {
+            if (comment.id === commentId) {
+              const newComment = { ...comment };
+
+              if (comment.userVote === vote) {
+                if (vote === "upvote") newComment.upvotes -= 1;
+                if (vote === "downvote") newComment.downvotes -= 1;
+                newComment.userVote = null;
+              } else {
+                if (comment.userVote === "upvote") newComment.upvotes -= 1;
+                if (comment.userVote === "downvote") newComment.downvotes -= 1;
+
+                if (vote === "upvote") newComment.upvotes += 1;
+                if (vote === "downvote") newComment.downvotes += 1;
+                newComment.userVote = vote;
+              }
+
+              return newComment;
+            }
+            return comment;
+          }
+        )});
+
+      return { previousQueries };
+    },
+    onError: (_err: unknown, _variables: any, context: any) => {
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(
+          ([queryKey, previousData]: [any, any]) => {
+            queryClient.setQueryData(queryKey, previousData);
+          },
+        );
+      }
     },
   });
-
-  return mutation;
 };
 
 export const useCommentsCreator = () => {

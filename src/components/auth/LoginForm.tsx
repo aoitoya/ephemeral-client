@@ -16,8 +16,6 @@ interface LoginFormValues {
   password: string;
 }
 
-
-
 const loginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
   password: Yup.string()
@@ -41,10 +39,6 @@ export function LoginForm() {
 
   return (
     <Box>
-      <Typography level="h3" sx={{ mb: 3, textAlign: "center", color: "text.primary" }}>
-        Welcome Back
-      </Typography>
-
       <Formik
         initialValues={initialValues}
         validationSchema={loginSchema}
@@ -60,7 +54,7 @@ export function LoginForm() {
                 placeholder="Enter your username"
                 error={touched.username && Boolean(errors.username)}
               />
-              <ErrorMessage name="email">
+              <ErrorMessage name="username">
                 {(msg) => (
                   <Typography
                     sx={{ color: "danger.500", fontSize: "0.8rem", mt: 0.5 }}
@@ -109,8 +103,6 @@ export function LoginForm() {
           </Form>
         )}
       </Formik>
-
-
     </Box>
   );
 }

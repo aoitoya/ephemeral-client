@@ -4,7 +4,7 @@ import {
   useAuthenticatedQuery,
   useAuthenticatedMutation,
 } from "@/services/api-hooks";
-import { postAPI } from "@/services/api/post.api";
+import { postAPI, type Post } from "@/services/api/post.api";
 
 export interface CreatePost {
   content: string;
@@ -46,81 +46,8 @@ export const usePosts = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       },
-    }
+    },
   );
-
-  // const [voteLoading, setVoteLoading] = useState<Record<number, boolean>>({});
-
-  // const handleVote = useCallback(
-  //   async (params: Vote) => {
-  //     const { postId } = params;
-
-  //     try {
-  //       // Set loading state for this post
-  //       setVoteLoading((prev) => ({ ...prev, [postId]: true }));
-
-  //       // Optimistically update the UI
-  //       await queryClient.cancelQueries({ queryKey: ["posts"] });
-  //       const previousPosts = queryClient.getQueryData<Post[]>(["posts"]);
-
-  //       if (previousPosts) {
-  //         queryClient.setQueryData<Post[]>(["posts"], (old) =>
-  //           old?.map((post) => {
-  //             if (post.id !== params.postId) return post;
-
-  //             const wasUpvote = post.userVote === "upvote";
-  //             const isUpvote = params.vote === "upvote";
-
-  //             let newUpvotes = post.upvotes;
-  //             let newDownvotes = post.downvotes;
-
-  //             if (isUpvote) {
-  //               if (wasUpvote) {
-  //                 newUpvotes--;
-  //               } else {
-  //                 newUpvotes++;
-  //                 if (wasUpvote === false) newDownvotes--;
-  //               }
-  //             } else {
-  //               if (wasUpvote) {
-  //                 newUpvotes--;
-  //                 newDownvotes++;
-  //               } else if (wasUpvote === false) {
-  //                 newDownvotes--;
-  //               } else {
-  //                 newDownvotes++;
-  //               }
-  //             }
-
-  //             return {
-  //               ...post,
-  //               userVote:
-  //                 wasUpvote === (isUpvote ? true : false) ? null : params.vote,
-  //               upvotes: newUpvotes,
-  //               downvotes: newDownvotes,
-  //             };
-  //           })
-  //         );
-  //       }
-
-  //       // Perform the actual vote
-  //       await postAPI.votePost(params.postId, params.vote);
-
-  //       // Invalidate and refetch to ensure we have fresh data
-  //       await queryClient.invalidateQueries({ queryKey: ["posts"] });
-
-  //       return true;
-  //     } catch (error) {
-  //       // Revert on error
-  //       await queryClient.invalidateQueries({ queryKey: ["posts"] });
-  //       throw error;
-  //     } finally {
-  //       // Clear loading state
-  //       setVoteLoading((prev) => ({ ...prev, [postId]: false }));
-  //     }
-  //   },
-  //   [queryClient]
-  // );
 
   return {
     posts: posts || [],
@@ -129,19 +56,49 @@ export const usePosts = () => {
     error,
     createPost: createPostMutation.mutateAsync,
     isCreating: createPostMutation.isPending,
-    // handleVote,
-    // isVoting: (postId: number) => voteLoading[postId] || false,
   };
 };
 
 export const useVotePost = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useAuthenticatedMutation(postAPI.votePost, {
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+  return useAuthenticatedMutation(postAPI.votePost, {
+    onMutate: async ({ postId, vote }: Vote) => {
+      await queryClient.cancelQueries({ queryKey: ["posts"] });
+
+      const previousPosts = queryClient.getQueryData<Post[]>(["posts"]);
+
+      queryClient.setQueryData<Post[]>(["posts"], (old) => {
+        if (!old) return [];
+        return old.map((post) => {
+          if (post.id === postId) {
+            const newPost = { ...post };
+
+            if (post.userVote === vote) {
+              if (vote === "upvote") newPost.upvotes -= 1;
+              if (vote === "downvote") newPost.downvotes -= 1;
+              newPost.userVote = null;
+            } else {
+              if (post.userVote === "upvote") newPost.upvotes -= 1;
+              if (post.userVote === "downvote") newPost.downvotes -= 1;
+
+              if (vote === "upvote") newPost.upvotes += 1;
+              if (vote === "downvote") newPost.downvotes += 1;
+              newPost.userVote = vote;
+            }
+
+            return newPost;
+          }
+          return post;
+        });
+      });
+
+      return { previousPosts };
+    },
+    onError: (_err: unknown, _variables: Vote, context: any) => {
+      if (context?.previousPosts) {
+        queryClient.setQueryData(["posts"], context.previousPosts);
+      }
     },
   });
-
-  return mutation;
 };

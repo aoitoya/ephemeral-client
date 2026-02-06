@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useCurrentUser } from "./useAuth";
+import { TokenService } from "@/services/token-service";
 import { SocketContext } from "./socket-context";
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const newSocket = io(import.meta.env.VITE_API_URL, {
         auth: {
-          token: localStorage.getItem("token"),
+          token: TokenService.getToken(),
         },
       });
 
@@ -36,7 +37,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         setIsConnected(false);
       }
     }
-  }, [user, socket]);
+  }, [user]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

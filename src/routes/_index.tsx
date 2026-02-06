@@ -21,7 +21,7 @@ function HomePage() {
         gap: { xs: 4, md: 8 },
         flexDirection: { xs: "column", md: "row" },
         p: { xs: 2, md: 4 },
-        bgcolor: "background.body", // Use theme body background
+        bgcolor: "background.body",
       }}
     >
       {/* Left side - Hero Text */}
@@ -39,7 +39,7 @@ function HomePage() {
         <Typography
           level="h1"
           sx={{
-            color: "text.primary", // Ensure good contrast
+            color: "text.primary",
             fontWeight: 700,
             fontSize: { xs: "2.25rem", md: "3rem" },
             lineHeight: 1.2,
@@ -58,12 +58,12 @@ function HomePage() {
           alignItems: "center",
           justifyContent: "center",
           maxWidth: { xs: "100%", sm: "400px" },
-          p: 4, // Increased padding
+          p: 4,
           borderRadius: "xl",
           bgcolor: "background.surface",
           border: "1px solid",
-          borderColor: "neutral.outlinedBorder", // Use theme border color
-          boxShadow: "sm", // Subtle shadow for depth
+          borderColor: "neutral.outlinedBorder",
+          boxShadow: "sm",
         }}
       >
         <Tabs
@@ -73,8 +73,8 @@ function HomePage() {
           sx={{
             width: "100%",
             borderRadius: "lg",
-            bgcolor: "background.level1", // Subtle background for the tab container
-            p: 1, // Padding inside the tab container
+            bgcolor: "background.level1",
+            p: 1,
           }}
         >
           <TabList
@@ -130,3 +130,4 @@ function HomePage() {
     </Box>
   );
 }
+
