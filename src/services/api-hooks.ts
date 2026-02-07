@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useTokenRefresh } from "../hooks/useTokenRefresh";
 import { TokenService } from "./token-service";
-import type { UseQueryOptions } from "@tanstack/react-query";
+import type { UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 
 type QueryOptions<T> = Omit<UseQueryOptions<T, unknown, T, unknown[]>, "queryKey">;
 
@@ -37,9 +37,9 @@ export const useAuthenticatedQuery = <T>(
   });
 };
 
-export const useAuthenticatedMutation = <T, V>(
+export const useAuthenticatedMutation = <T, V, C = unknown>(
   mutationFn: (_variables: V) => Promise<T>,
-  options = {}
+  options: UseMutationOptions<T, Error, V, C> = {}
 ) => {
   return useMutation({
     mutationFn: async (variables: V) => {
