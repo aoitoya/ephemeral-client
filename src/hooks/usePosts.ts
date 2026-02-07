@@ -29,18 +29,20 @@ export const usePosts = () => {
     return response;
   });
 
-  const createPostMutation = useAuthenticatedMutation<void, string>(
-    (text: string) => {
-      const data: CreatePost = { content: text, topics: [] };
+  const createPostMutation = useAuthenticatedMutation<
+    void,
+    { content: string; file?: File }
+  >(
+    async ({ content, file }) => {
+      const words = content.split(" ");
+      const topics = words
+        .filter((word: string) => word.startsWith("#"))
+        .map((word: string) => word.slice(1));
+      const cleanContent = words
+        .filter((word: string) => !word.startsWith("#"))
+        .join(" ");
 
-      const words = text.split(" ");
-
-      data.topics = words
-        .filter((word) => word.startsWith("#"))
-        .map((word) => word.slice(1));
-      data.content = words.filter((word) => !word.startsWith("#")).join(" ");
-
-      return postAPI.createPost(data);
+      await postAPI.createPost({ content: cleanContent, topics }, file);
     },
     {
       onSuccess: () => {

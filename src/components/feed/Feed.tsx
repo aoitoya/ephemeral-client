@@ -72,7 +72,12 @@ export function Feed() {
           gap: 3,
         }}
       >
-        <CreatePost onSubmit={createPost} isSubmitting={isCreating} />
+        <CreatePost
+          onSubmit={async (content, file) => {
+            await createPost({ content, file });
+          }}
+          isSubmitting={isCreating}
+        />
 
         <Stack spacing={3} sx={{ mt: 1 }}>
           {posts.length > 0 ? (

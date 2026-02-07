@@ -5,12 +5,19 @@ interface User {
   username: string;
 }
 
+export interface MediaItem {
+  id: string;
+  url: string;
+  type: "image";
+}
+
 export interface Post {
   id: string;
   content: string;
   upvotes: number;
   downvotes: number;
   topics: string[];
+  media: MediaItem[];
   createdAt: string;
   commentCount: number;
   userVote: "upvote" | "downvote" | null;
@@ -30,7 +37,20 @@ export interface Comment {
 }
 
 export const postAPI = {
-  createPost: async (data: { content: string; topics: string[] }) => {
+  createPost: async (
+    data: { content: string; topics: string[] },
+    file?: File,
+  ) => {
+    if (file) {
+      const formData = new FormData();
+      formData.append("content", data.content);
+      formData.append("topics", JSON.stringify(data.topics));
+      formData.append("file", file);
+      const response = await apiClient.post("/posts", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    }
     const response = await apiClient.post("/posts", data);
     return response.data;
   },

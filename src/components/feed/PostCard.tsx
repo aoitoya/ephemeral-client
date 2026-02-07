@@ -108,6 +108,25 @@ export function PostCard({ post }: PostCardProps) {
           {post.content}
         </Typography>
 
+        {/* Post Media */}
+        {post.media && post.media.length > 0 && (
+          <Box sx={{ mb: 2 }}>
+            {post.media.map((mediaItem) => (
+              <img
+                key={mediaItem.id}
+                src={mediaItem.url}
+                alt="Post image"
+                style={{
+                  maxWidth: "100%",
+                  borderRadius: "8px",
+                  maxHeight: "400px",
+                  objectFit: "cover",
+                }}
+              />
+            ))}
+          </Box>
+        )}
+
         {/* Topics */}
         {post.topics?.length > 0 && (
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
