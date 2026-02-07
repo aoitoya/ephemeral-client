@@ -9,10 +9,5 @@
       },
       "enabled": true,
     },
-    "deepwiki": {
-      "type": "remote",
-      "headers": {},
-      "url": "https://mcp.deepwiki.com/mcp",
-    },
   },
 }
