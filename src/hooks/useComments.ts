@@ -69,13 +69,15 @@ export const useCommentsVoter = () => {
 
       return { previousQueries };
     },
-    onError: (_err: unknown, _variables: any, context: any) => {
+    onError: (
+      _err: unknown,
+      _variables: { commentId: string; vote: "upvote" | "downvote" },
+      context?: { previousQueries?: [readonly unknown[], Comment[] | undefined][] },
+    ) => {
       if (context?.previousQueries) {
-        context.previousQueries.forEach(
-          ([queryKey, previousData]: [any, any]) => {
-            queryClient.setQueryData(queryKey, previousData);
-          },
-        );
+        context.previousQueries.forEach(([queryKey, previousData]) => {
+          queryClient.setQueryData(queryKey, previousData);
+        });
       }
     },
   });

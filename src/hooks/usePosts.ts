@@ -95,7 +95,7 @@ export const useVotePost = () => {
 
       return { previousPosts };
     },
-    onError: (_err: unknown, _variables: Vote, context: any) => {
+    onError: (_err: unknown, _variables: Vote, context?: { previousPosts?: Post[] }) => {
       if (context?.previousPosts) {
         queryClient.setQueryData(["posts"], context.previousPosts);
       }
