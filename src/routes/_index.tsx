@@ -93,10 +93,10 @@ function HomePage() {
                 borderRadius: "md",
                 "&.Mui-selected": {
                   bgcolor: "background.surface",
-                  boxShadow: "xs", // More subtle shadow for selected tab
+                  boxShadow: "xs",
                 },
                 "&:not(.Mui-selected)": {
-                  color: "text.secondary", // Make unselected tabs less prominent
+                  color: "text.secondary",
                 },
               }}
             >
@@ -130,4 +130,3 @@ function HomePage() {
     </Box>
   );
 }
-
