@@ -23,6 +23,8 @@ import { ConnectionRequestDialog } from "@/components/messages/ConnectionRequest
 import type { Post, Comment } from "@/services/api/post.api";
 import { useConnectionMutations } from "@/hooks/useConnection";
 import { useVotePost } from "@/hooks/usePosts";
+import { API_V1 } from "@/services/api-client";
+import { useCurrentUser } from "@/hooks/useAuth";
 
 interface PostCardProps {
   post: Post;
@@ -41,6 +43,9 @@ export function PostCard({ post }: PostCardProps) {
   const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false);
   const { mutateAsync: votePost, isPending: isVoting } = useVotePost();
   const connection = useConnectionMutations();
+  const { data: currentUser } = useCurrentUser();
+
+  const isOwnPost = currentUser?.id === post.author?.id;
 
   const handleSendConnectionRequest = async () => {
     await connection.createConnectionRequest({
@@ -72,28 +77,30 @@ export function PostCard({ post }: PostCardProps) {
               <Typography level="title-sm" sx={{ fontWeight: "bold" }}>
                 {post.author?.username || "Anonymous"}
               </Typography>
-              <IconButton
-                className="message-button"
-                size="sm"
-                variant="plain"
-                color="neutral"
-                title="Send connection request"
-                sx={{
-                  opacity: 0,
-                  visibility: "hidden",
-                  transition: "opacity 0.2s, visibility 0.2s",
-                  p: 0.5,
-                  "&:hover": {
-                    color: "primary.500",
-                  },
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsConnectionDialogOpen(true);
-                }}
-              >
-                <PersonAdd fontSize="small" />
-              </IconButton>
+              {!isOwnPost && (
+                <IconButton
+                  className="message-button"
+                  size="sm"
+                  variant="plain"
+                  color="neutral"
+                  title="Send connection request"
+                  sx={{
+                    opacity: 0,
+                    visibility: "hidden",
+                    transition: "opacity 0.2s, visibility 0.2s",
+                    p: 0.5,
+                    "&:hover": {
+                      color: "primary.500",
+                    },
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsConnectionDialogOpen(true);
+                  }}
+                >
+                  <PersonAdd fontSize="small" />
+                </IconButton>
+              )}
             </Box>
             <Typography level="body-xs" color="neutral">
               {formatDistanceToNow(new Date(post.createdAt), {
@@ -109,21 +116,18 @@ export function PostCard({ post }: PostCardProps) {
         </Typography>
 
         {/* Post Media */}
-        {post.media && post.media.length > 0 && (
+        {post.mediaKey && (
           <Box sx={{ mb: 2 }}>
-            {post.media.map((mediaItem) => (
-              <img
-                key={mediaItem.id}
-                src={mediaItem.url}
-                alt="Post image"
-                style={{
-                  maxWidth: "100%",
-                  borderRadius: "8px",
-                  maxHeight: "400px",
-                  objectFit: "cover",
-                }}
-              />
-            ))}
+            <img
+              src={`${API_V1}/media/${post.mediaKey}`}
+              alt="Post attachment"
+              style={{
+                maxWidth: "100%",
+                borderRadius: "8px",
+                maxHeight: "400px",
+                objectFit: "cover",
+              }}
+            />
           </Box>
         )}
 

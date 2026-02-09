@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import {
@@ -7,6 +8,7 @@ import {
   FormLabel,
   Input,
   Button,
+  Alert,
 } from "@mui/joy";
 import { useLogin } from "@/hooks/useAuth";
 import { useNavigate } from "@tanstack/react-router";
@@ -23,9 +25,14 @@ const loginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
+interface ErrorResponse {
+  message?: string;
+}
+
 export function LoginForm() {
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const initialValues: LoginFormValues = {
     username: "",
@@ -33,8 +40,15 @@ export function LoginForm() {
   };
 
   const handleSubmit = async (values: LoginFormValues) => {
-    await login(values);
-    navigate({ to: "/feed" });
+    setLoginError(null);
+    try {
+      await login(values);
+      navigate({ to: "/feed" });
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: ErrorResponse } };
+      const message = err.response?.data?.message || "Login failed";
+      setLoginError(message);
+    }
   };
 
   return (
@@ -46,6 +60,12 @@ export function LoginForm() {
       >
         {({ isSubmitting, errors, touched }) => (
           <Form>
+            {loginError && (
+              <Alert color="danger" sx={{ mb: 2 }}>
+                {loginError}
+              </Alert>
+            )}
+
             <FormControl sx={{ mb: 2 }}>
               <FormLabel>Username</FormLabel>
               <Field
@@ -106,3 +126,5 @@ export function LoginForm() {
     </Box>
   );
 }
+
+export default LoginForm;

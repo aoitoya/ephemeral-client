@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Chip,
   IconButton,
   Button,
   List,
   ListItem,
   ListItemDecorator,
   ListItemContent,
-  Divider,
+  Tab,
+  TabList,
+  Tabs,
   Sheet,
-  Stack,
 } from "@mui/joy";
 import {
   Person as PersonIcon,
@@ -21,6 +21,7 @@ import {
   Notifications as NotificationsIcon,
   CheckCircle as CheckIcon,
   Delete as DeleteIcon,
+  DoneAll as DoneAllIcon,
 } from "@mui/icons-material";
 import { useSocketEvent } from "@/hooks/useSocket";
 
@@ -43,7 +44,6 @@ export function NotificationCenter() {
     "all" | "unread" | "connection_requests" | "likes" | "comments"
   >("all");
 
-  // Mock initial notifications
   useEffect(() => {
     const mockNotifications: Notification[] = [
       {
@@ -94,7 +94,6 @@ export function NotificationCenter() {
     setNotifications(mockNotifications);
   }, []);
 
-  // Socket event listeners
   useSocketEvent("notification:new", (notification: Notification) => {
     setNotifications((prev) => [notification, ...prev]);
   });
@@ -113,8 +112,6 @@ export function NotificationCenter() {
     setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
-
-
   const formatTimestamp = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -123,9 +120,9 @@ export function NotificationCenter() {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}d`;
   };
 
   const filteredNotifications = notifications.filter((notification) => {
@@ -163,182 +160,209 @@ export function NotificationCenter() {
   const getNotificationColor = (type: string) => {
     switch (type) {
       case "connection_request":
-        return "primary";
+        return "var(--icon-primary, #667eea)";
       case "like":
-        return "danger";
+        return "var(--icon-danger, #f44336)";
       case "comment":
-        return "neutral";
+        return "var(--icon-neutral, #757575)";
       case "trending":
-        return "success";
+        return "var(--icon-success, #4caf50)";
       default:
-        return "warning";
+        return "var(--icon-warning, #ff9800)";
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
-      <Typography level="h2" sx={{ mb: 3 }}>
-        Notifications
-      </Typography>
-
-      {/* Filters */}
-      <Stack direction="row" justifyContent="space-between" spacing={1}>
-        <Stack direction="row" spacing={1}>
-          <Chip
-            variant={filter === "all" ? "solid" : "soft"}
-            onClick={() => setFilter("all")}
-          >
-            All ({notifications.length})
-          </Chip>
-          <Chip
-            variant={filter === "unread" ? "solid" : "soft"}
-            color="primary"
-            onClick={() => setFilter("unread")}
-          >
-            Unread ({unreadCount})
-          </Chip>
-          <Chip
-            variant={filter === "connection_requests" ? "solid" : "soft"}
-            color="primary"
-            onClick={() => setFilter("connection_requests")}
-          >
-            Connection Requests
-          </Chip>
-          <Chip
-            variant={filter === "likes" ? "solid" : "soft"}
-            color="danger"
-            onClick={() => setFilter("likes")}
-          >
-            Likes
-          </Chip>
-          <Chip
-            variant={filter === "comments" ? "solid" : "soft"}
-            color="neutral"
-            onClick={() => setFilter("comments")}
-          >
-            Comments
-          </Chip>
-        </Stack>
-
+    <Box
+      sx={{
+        maxWidth: 600,
+        mx: "auto",
+        p: { xs: 2, sm: 3 },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography level="h3">Notifications</Typography>
+          {unreadCount > 0 && (
+            <Typography
+              level="body-sm"
+              sx={{
+                bgcolor: "primary.solidBg",
+                color: "white",
+                px: 1,
+                borderRadius: "16px",
+                fontSize: "0.75rem",
+                fontWeight: "bold",
+              }}
+            >
+              {unreadCount}
+            </Typography>
+          )}
+        </Box>
         <Button
-          variant="outlined"
+          variant="plain"
+          size="sm"
+          color="neutral"
           onClick={markAllAsRead}
           disabled={unreadCount === 0}
-          startDecorator={<CheckIcon />}
+          startDecorator={<DoneAllIcon />}
+          sx={{ textDecoration: "underline", fontSize: "0.8rem" }}
         >
-          Mark All Read
+          Mark all read
         </Button>
-      </Stack>
+      </Box>
 
-      {/* Actions */}
-      <Box sx={{ display: "flex", gap: 2, mb: 3 }}></Box>
+      <Tabs
+        value={filter}
+        onChange={(_, value) => setFilter(value as typeof filter)}
+        sx={{ mb: 2 }}
+      >
+        <TabList
+          variant="soft"
+          sx={{
+            "--TabList-gap": "4px",
+            "--Tab-radius": "8px",
+            fontSize: "0.8rem",
+          }}
+        >
+          <Tab value="all">All</Tab>
+          <Tab value="unread">
+            Unread {unreadCount > 0 && `(${unreadCount})`}
+          </Tab>
+          <Tab value="connection_requests">Connections</Tab>
+          <Tab value="likes">Likes</Tab>
+          <Tab value="comments">Comments</Tab>
+        </TabList>
+      </Tabs>
 
-      {/* Notifications List */}
-      <Sheet variant="outlined" sx={{ borderRadius: "lg" }}>
-        {filteredNotifications.length === 0 ? (
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 8,
-              color: "text.tertiary",
-            }}
-          >
-            <NotificationsIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
-            <Typography level="title-lg">
-              {filter === "all"
-                ? "No notifications yet"
-                : `No ${filter} notifications`}
-            </Typography>
-            <Typography level="body-sm" sx={{ mt: 1 }}>
-              {filter === "all"
-                ? "When you get notifications, they'll appear here"
-                : `No notifications match the ${filter} filter`}
-            </Typography>
-          </Box>
-        ) : (
-          <List>
-            {filteredNotifications.map((notification, index) => (
-              <div key={notification.id}>
-                <ListItem
+      {filteredNotifications.length === 0 ? (
+        <Sheet
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "text.tertiary",
+            py: 8,
+            borderRadius: "lg",
+          }}
+        >
+          <NotificationsIcon sx={{ fontSize: 48, opacity: 0.4, mb: 2 }} />
+          <Typography level="body-md" fontWeight="500">
+            {filter === "all"
+              ? "No notifications yet"
+              : `No ${filter.replace("_", " ")}`}
+          </Typography>
+          <Typography level="body-sm" sx={{ mt: 0.5, opacity: 0.7 }}>
+            {filter === "all"
+              ? "Notifications will appear here"
+              : "Try another filter"}
+          </Typography>
+        </Sheet>
+      ) : (
+        <List
+          sx={{
+            flex: 1,
+            overflow: "auto",
+            p: 0,
+          }}
+        >
+          {filteredNotifications.map((notification) => (
+            <ListItem
+              key={notification.id}
+              sx={{
+                py: 1.5,
+                px: 2,
+                borderRadius: "8px",
+                mb: 0.5,
+                backgroundColor: notification.read
+                  ? "transparent"
+                  : "action.hover",
+                transition: "background-color 0.2s",
+                "&:hover": {
+                  backgroundColor: notification.read
+                    ? "action.selected"
+                    : "action.selected",
+                },
+              }}
+              endAction={
+                <Box sx={{ display: "flex", gap: 0.5 }}>
+                  {!notification.read && (
+                    <IconButton
+                      size="sm"
+                      variant="plain"
+                      color="primary"
+                      onClick={() => markAsRead(notification.id)}
+                      sx={{ opacity: 0.6, "&:hover": { opacity: 1 } }}
+                    >
+                      <CheckIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    size="sm"
+                    variant="plain"
+                    color="neutral"
+                    onClick={() => clearNotification(notification.id)}
+                    sx={{ opacity: 0.4, "&:hover": { opacity: 1, color: "danger.500" } }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              }
+            >
+              <ListItemDecorator sx={{ color: getNotificationColor(notification.type) }}>
+                {getNotificationIcon(notification.type)}
+              </ListItemDecorator>
+              <ListItemContent>
+                <Typography
+                  level="body-sm"
+                  fontWeight={notification.read ? "400" : "600"}
                   sx={{
-                    py: 2,
-                    px: 2,
-                    backgroundColor: notification.read
-                      ? "transparent"
-                      : "primary.50",
-                    "&:hover": {
-                      backgroundColor: notification.read
-                        ? "neutral.50"
-                        : "primary.100",
-                    },
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "100%",
                   }}
                 >
-                  <ListItemDecorator>
-                    <Box
-                      sx={{
-                        color: getNotificationColor(notification.type),
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      {getNotificationIcon(notification.type)}
-                    </Box>
-                  </ListItemDecorator>
-                  <ListItemContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          level="body-sm"
-                          fontWeight={notification.read ? "normal" : "bold"}
-                        >
-                          {notification.title}
-                        </Typography>
-                        <Typography
-                          level="body-xs"
-                          sx={{ color: "text.secondary", mt: 0.5 }}
-                        >
-                          {notification.message}
-                        </Typography>
-                        <Typography
-                          level="body-xs"
-                          sx={{ color: "text.tertiary", mt: 0.5 }}
-                        >
-                          {formatTimestamp(notification.timestamp)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", gap: 1, ml: 1 }}>
-                        {!notification.read && (
-                          <IconButton
-                            size="sm"
-                            onClick={() => markAsRead(notification.id)}
-                            sx={{ color: "primary.500" }}
-                          >
-                            <CheckIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                        <IconButton
-                          size="sm"
-                          onClick={() => clearNotification(notification.id)}
-                          sx={{ color: "text.tertiary" }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                  </ListItemContent>
-                </ListItem>
-                {index < filteredNotifications.length - 1 && <Divider />}
-              </div>
-            ))}
-          </List>
-        )}
-      </Sheet>
+                  {notification.title}
+                </Typography>
+                <Typography
+                  level="body-xs"
+                  sx={{
+                    color: "text.secondary",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "100%",
+                    mt: 0.25,
+                  }}
+                >
+                  {notification.message}
+                </Typography>
+                <Typography
+                  level="body-xs"
+                  sx={{ color: "text.tertiary", mt: 0.25, fontSize: "0.7rem" }}
+                >
+                  {formatTimestamp(notification.timestamp)}
+                </Typography>
+              </ListItemContent>
+            </ListItem>
+          ))}
+        </List>
+      )}
     </Box>
   );
 }
+
+export default NotificationCenter;
