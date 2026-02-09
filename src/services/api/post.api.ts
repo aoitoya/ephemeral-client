@@ -5,19 +5,13 @@ interface User {
   username: string;
 }
 
-export interface MediaItem {
-  id: string;
-  url: string;
-  type: "image";
-}
-
 export interface Post {
   id: string;
   content: string;
   upvotes: number;
   downvotes: number;
   topics: string[];
-  media: MediaItem[];
+  mediaKey: string | null;
   createdAt: string;
   commentCount: number;
   userVote: "upvote" | "downvote" | null;
