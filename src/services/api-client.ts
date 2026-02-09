@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { TokenService } from "./token-service";
+import { authAPI } from "./api/auth.api";
 
 export const API_URL = import.meta.env.VITE_API_URL || "";
 export const API_V1 = `${API_URL}/api/v1`;
@@ -50,22 +51,20 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await apiClient.post("/users/refresh-token");
-        const newToken = TokenService.getToken();
+        const data = await authAPI.refreshToken();
+        TokenService.setToken(data.token);
 
-        if (failedRequestsQueue.length > 0) {
-          failedRequestsQueue.forEach((callback) => callback.resolve(newToken!));
-          failedRequestsQueue = [];
-        }
+        failedRequestsQueue.forEach(({ resolve }) => resolve(data.token));
+        failedRequestsQueue = [];
 
+        originalRequest.headers.Authorization = `Bearer ${data.token}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        failedRequestsQueue.forEach((callback) => callback.reject(refreshError as Error));
+        failedRequestsQueue.forEach(({ reject }) => reject(refreshError as Error));
         failedRequestsQueue = [];
 
         TokenService.clearToken();
         window.dispatchEvent(new CustomEvent("auth:unauthorized"));
-
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
