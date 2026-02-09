@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { TokenService } from "./token-service";
 
 export const API_URL = import.meta.env.VITE_API_URL || "";
 export const API_V1 = `${API_URL}/api/v1`;
@@ -13,6 +14,12 @@ export const apiClient = axios.create({
   },
 });
 
+let isRefreshing = false;
+let failedRequestsQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: Error) => void;
+}> = [];
+
 apiClient.interceptors.request.use((config) => {
   const csrf = Cookies.get("XSRF-TOKEN");
   if (csrf) config.headers["x-xsrf-token"] = csrf;
@@ -21,10 +28,50 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedRequestsQueue.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(apiClient(originalRequest));
+            },
+            reject: (err: Error) => {
+              reject(err);
+            },
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        await apiClient.post("/users/refresh-token");
+        const newToken = TokenService.getToken();
+
+        if (failedRequestsQueue.length > 0) {
+          failedRequestsQueue.forEach((callback) => callback.resolve(newToken!));
+          failedRequestsQueue = [];
+        }
+
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        failedRequestsQueue.forEach((callback) => callback.reject(refreshError as Error));
+        failedRequestsQueue = [];
+
+        TokenService.clearToken();
+        window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   },
 );
