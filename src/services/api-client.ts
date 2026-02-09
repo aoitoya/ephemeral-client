@@ -18,3 +18,13 @@ apiClient.interceptors.request.use((config) => {
   if (csrf) config.headers["x-xsrf-token"] = csrf;
   return config;
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+    }
+    return Promise.reject(error);
+  },
+);
