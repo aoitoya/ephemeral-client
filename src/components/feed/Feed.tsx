@@ -1,12 +1,8 @@
-import { useState } from "react";
 import {
   Box,
   Typography,
   CircularProgress,
   Button,
-  Tab,
-  TabList,
-  Tabs,
 } from "@mui/joy";
 import { Add as AddIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import { PostCard } from "./PostCard";
@@ -15,7 +11,6 @@ import { usePosts } from "@/hooks/usePosts";
 
 export function Feed() {
   const { posts, isLoading, error, createPost, isCreating, refetch } = usePosts();
-  const [activeTab, setActiveTab] = useState(0);
 
   if (isLoading) {
     return (
@@ -70,38 +65,6 @@ export function Feed() {
         py: 3,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography level="h3">Feed</Typography>
-        <Button
-          size="sm"
-          variant="plain"
-          onClick={() => refetch()}
-          startDecorator={<RefreshIcon />}
-          sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
-        >
-          Refresh
-        </Button>
-      </Box>
-
-      <Tabs
-        value={activeTab}
-        onChange={(_, value) => setActiveTab(value as number)}
-        sx={{ mb: 3 }}
-      >
-        <TabList variant="soft" sx={{ borderRadius: "lg" }}>
-          <Tab>For You</Tab>
-          <Tab>Following</Tab>
-          <Tab>Trending</Tab>
-        </TabList>
-      </Tabs>
-
       <CreatePost
         onSubmit={async (content, file) => {
           await createPost({ content, file });
