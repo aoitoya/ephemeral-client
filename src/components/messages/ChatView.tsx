@@ -2,8 +2,6 @@ import {
   Box,
   Typography,
   Button,
-  Stack,
-  Sheet,
   IconButton,
   Avatar,
   Textarea,
@@ -42,36 +40,42 @@ export default function ChatView({
         flexDirection: "column",
         flex: 1,
         height: "100%",
-        position: "relative",
+        bgcolor: "background.body",
       }}
     >
-      {/* Header */}
-      <Sheet
-        variant="soft"
+      <Box
         sx={{
-          p: 2,
           display: "flex",
           alignItems: "center",
-          gap: 2,
+          gap: 1.5,
+          px: 2,
+          py: 1.5,
           borderBottom: "1px solid",
           borderColor: "divider",
+          bgcolor: "background.surface",
         }}
       >
         {isMobile && onBack && (
-          <IconButton variant="plain" onClick={onBack} sx={{ mr: 1 }}>
+          <IconButton variant="plain" onClick={onBack} size="sm">
             <ArrowBackIcon />
           </IconButton>
         )}
-        <Avatar>{user.username.charAt(0).toUpperCase()}</Avatar>
+        <Avatar
+          size="sm"
+          sx={{ bgcolor: "primary.solidBg" }}
+        >
+          {user.username.charAt(0).toUpperCase()}
+        </Avatar>
         <Box>
-          <Typography level="title-md">{user.username}</Typography>
+          <Typography level="title-sm" sx={{ fontWeight: 600 }}>
+            {user.username}
+          </Typography>
           <Typography level="body-xs" color="neutral">
             Online
           </Typography>
         </Box>
-      </Sheet>
+      </Box>
 
-      {/* Messages */}
       <Box
         sx={{
           flex: 1,
@@ -79,20 +83,34 @@ export default function ChatView({
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          gap: 1.5,
           bgcolor: "background.level1",
         }}
       >
-        {messages.map((msg, idx) => (
-          <MessageBubble
-            key={idx}
-            message={msg}
-            isOwnMessage={msg.from.id === currentUserId}
-          />
-        ))}
+        {messages.length === 0 ? (
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography level="body-sm" color="neutral">
+              No messages yet. Start the conversation!
+            </Typography>
+          </Box>
+        ) : (
+          messages.map((msg, idx) => (
+            <MessageBubble
+              key={idx}
+              message={msg}
+              isOwnMessage={msg.from.id === currentUserId}
+            />
+          ))
+        )}
       </Box>
 
-      {/* Message Input */}
       <Box
         component="form"
         onSubmit={(e) => {
@@ -106,18 +124,16 @@ export default function ChatView({
           bgcolor: "background.surface",
         }}
       >
-        <Stack direction="row" spacing={1}>
+        <Box sx={{ display: "flex", gap: 1 }}>
           <Textarea
             placeholder="Type a message..."
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
-            variant="outlined"
-            size="md"
+            minRows={1}
+            maxRows={4}
             sx={{
               flex: 1,
-              "& .MuiInput-root": {
-                "&:before": { border: "none" },
-              },
+              "& .MuiInput-input": { p: 1.25 },
             }}
           />
           <Button
@@ -125,11 +141,11 @@ export default function ChatView({
             variant="solid"
             color="primary"
             disabled={!message.trim()}
-            endDecorator={<SendIcon />}
+            sx={{ alignSelf: "flex-end", borderRadius: "20px", px: 2 }}
           >
-            Send
+            <SendIcon fontSize="small" />
           </Button>
-        </Stack>
+        </Box>
       </Box>
     </Box>
   );

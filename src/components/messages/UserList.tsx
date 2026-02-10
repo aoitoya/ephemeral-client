@@ -2,11 +2,9 @@ import { useOnlineConnectionsFetch } from "@/hooks/useConnection";
 import type { User } from "@/services/api/user.api";
 import {
   List,
-  ListItem,
   ListItemButton,
   Avatar,
   Typography,
-  Badge,
   Box,
 } from "@mui/joy";
 
@@ -23,119 +21,87 @@ export default function UserList({
 }: UserListProps) {
   const { data: onlineConnections = [] } = useOnlineConnectionsFetch();
 
+  const onlineUserIds = new Set(onlineConnections.map((u) => u.id));
+
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: 300 },
+        width: { xs: "100%", md: 320 },
         borderRight: "1px solid",
         borderLeft: "1px solid",
         borderColor: "divider",
         bgcolor: "background.surface",
         height: "100%",
-        overflowX: "hidden",
         overflowY: "auto",
       }}
     >
-      <Box height="50%">
-        <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography level="h4" component="h1">
-            Messages
-          </Typography>
-        </Box>
-        <List>
-          {users.map((user) => (
-            <ListItem key={user.id} sx={{ p: 0, mt: 2, ml: 2 }}>
-              <ListItemButton
-                selected={selectedUserId === user.id}
-                onClick={() => onSelectUser(user)}
-                sx={{
-                  borderRadius: 0,
-                  "&.Mui-selected": {
-                    bgcolor: "primary.softBg",
-                    "&:hover": {
-                      bgcolor: "primary.softHoverBg",
-                    },
-                  },
-                }}
-              >
-                <Badge
-                  color={user.isOnline ? "success" : "neutral"}
-                  variant={user.isOnline ? "solid" : "outlined"}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  badgeInset="4px"
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      boxShadow:
-                        "0 0 0 2px var(--joy-palette-background-surface)",
-                    },
-                  }}
-                >
-                  <Avatar>{user.username.charAt(0).toUpperCase()}</Avatar>
-                </Badge>
-                <Box>
-                  <Typography level="title-sm">{user.username}</Typography>
-                  <Typography level="body-xs" color="neutral">
-                    {user.isOnline ? "Online" : "Offline"}
-                    {user.unreadCount ? ` • ${user.unreadCount} new` : ""}
-                  </Typography>
-                </Box>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "divider" }}>
+        <Typography level="h4">Messages</Typography>
       </Box>
 
-      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "divider" }}>
-        <Typography level="h4" component="h1">
-          Online
-        </Typography>
-      </Box>
-      <List>
-        {onlineConnections.map((user) => (
-          <ListItem key={user.id} sx={{ p: 0, mt: 2, ml: 2 }}>
+      {users.length === 0 ? (
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          <Typography level="body-sm" color="neutral">
+            No connections yet
+          </Typography>
+        </Box>
+      ) : (
+        <List sx={{ p: 0 }}>
+          {users.map((user) => (
             <ListItemButton
+              key={user.id}
               selected={selectedUserId === user.id}
               onClick={() => onSelectUser(user)}
               sx={{
-                borderRadius: 0,
+                py: 1.5,
+                px: 2,
                 "&.Mui-selected": {
-                  bgcolor: "primary.softBg",
-                  "&:hover": {
-                    bgcolor: "primary.softHoverBg",
-                  },
+                  bgcolor: "action.selected",
                 },
               }}
             >
-              <Badge
-                color={"success"}
-                variant={"solid"}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                badgeInset="4px"
-                sx={{
-                  "& .MuiBadge-badge": {
-                    boxShadow:
-                      "0 0 0 2px var(--joy-palette-background-surface)",
-                  },
-                }}
-              >
-                <Avatar>{user.username.charAt(0).toUpperCase()}</Avatar>
-              </Badge>
-              <Box>
-                <Typography level="title-sm">{user.username}</Typography>
-                <Typography level="body-xs" color="neutral">
-                  {"Online"}
-                </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Box sx={{ position: "relative" }}>
+                  <Avatar
+                    size="md"
+                    sx={{ bgcolor: "primary.solidBg" }}
+                  >
+                    {user.username.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      right: 0,
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      bgcolor: onlineUserIds.has(user.id) ? "success.solidBg" : "neutral.500",
+                      border: "2px solid var(--joy-palette-background-surface)",
+                    }}
+                  />
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography level="title-sm" sx={{ fontWeight: 500 }}>
+                    {user.username}
+                  </Typography>
+                  <Typography
+                    level="body-xs"
+                    color="neutral"
+                    sx={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {onlineUserIds.has(user.id) ? "Online" : "Offline"}
+                  </Typography>
+                </Box>
               </Box>
             </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+          ))}
+        </List>
+      )}
     </Box>
   );
 }
