@@ -6,21 +6,21 @@ import {
   Typography,
   IconButton,
   Avatar,
+  Button,
 } from "@mui/joy";
 import {
   Favorite,
   HeartBroken,
-  ChatBubble,
+  ChatBubbleOutline,
   PersonAdd,
+  MoreVert,
 } from "@mui/icons-material";
 import { formatDistanceToNow } from "date-fns";
 
-// Components
 import { CommentsSection } from "./CommentsSection";
 import { ConnectionRequestDialog } from "@/components/messages/ConnectionRequestDialog";
 
-// Types
-import type { Post, Comment } from "@/services/api/post.api";
+import type { Post } from "@/services/api/post.api";
 import { useConnectionMutations } from "@/hooks/useConnection";
 import { useVotePost } from "@/hooks/usePosts";
 import { API_V1 } from "@/services/api-client";
@@ -28,13 +28,12 @@ import { useCurrentUser } from "@/hooks/useAuth";
 
 interface PostCardProps {
   post: Post;
-  // onVote: (params: { postId: string; vote: "upvote" | "downvote" }) => void;
   onCommentVote?: (_params: {
     commentId: string;
     vote: "upvote" | "downvote";
   }) => void;
   onAddComment?: (_postId: string, _content: string) => Promise<void>;
-  comments?: Comment[];
+  comments?: import("@/services/api/post.api").Comment[];
   isLoadingComments?: boolean;
 }
 
@@ -54,171 +53,240 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <Card variant="outlined" sx={{ "&:hover": { boxShadow: "md" } }}>
-      <CardContent>
-        {/* Post Header */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mb: 2,
-            position: "relative",
-            "&:hover .message-button": {
-              opacity: 1,
-              visibility: "visible",
-            },
-          }}
-        >
-          <Avatar size="sm" sx={{ mr: 1.5 }}>
-            {post.author?.username?.charAt(0).toUpperCase() || "A"}
-          </Avatar>
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography level="title-sm" sx={{ fontWeight: "bold" }}>
-                {post.author?.username || "Anonymous"}
-              </Typography>
-              {!isOwnPost && (
+    <>
+      <Card
+        variant="outlined"
+        sx={{
+          mb: 2,
+          transition: "all 0.2s ease",
+          "&:hover": {
+            boxShadow: "md",
+            borderColor: "divider",
+          },
+        }}
+      >
+        <CardContent sx={{ p: 2.5 }}>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Avatar
+              size="md"
+              sx={{
+                bgcolor: "primary.solidBg",
+                fontSize: "1rem",
+              }}
+            >
+              {post.author?.username?.charAt(0).toUpperCase() || "A"}
+            </Avatar>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: " center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box>
+                  <Typography
+                    level="title-sm"
+                    sx={{ fontWeight: 600, display: "inline-block", mr: 1 }}
+                  >
+                    {post.author?.username || "Anonymous"}
+                  </Typography>
+                  <Typography
+                    level="body-xs"
+                    color="neutral"
+                    sx={{ display: "inline-block" }}
+                  >
+                    {formatDistanceToNow(new Date(post.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </Typography>
+                </Box>
                 <IconButton
-                  className="message-button"
                   size="sm"
                   variant="plain"
                   color="neutral"
-                  title="Send connection request"
-                  sx={{
-                    opacity: 0,
-                    visibility: "hidden",
-                    transition: "opacity 0.2s, visibility 0.2s",
-                    p: 0.5,
-                    "&:hover": {
-                      color: "primary.500",
-                    },
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsConnectionDialogOpen(true);
-                  }}
+                  sx={{ opacity: 0.5, "&:hover": { opacity: 1 } }}
                 >
-                  <PersonAdd fontSize="small" />
+                  <MoreVert fontSize="small" />
                 </IconButton>
-              )}
-            </Box>
-            <Typography level="body-xs" color="neutral">
-              {formatDistanceToNow(new Date(post.createdAt), {
-                addSuffix: true,
-              })}
-            </Typography>
-          </Box>
-        </Box>
+              </Box>
 
-        {/* Post Content */}
-        <Typography sx={{ mb: 2, whiteSpace: "pre-line" }}>
-          {post.content}
-        </Typography>
-
-        {/* Post Media */}
-        {post.mediaKey && (
-          <Box sx={{ mb: 2 }}>
-            <img
-              src={`${API_V1}/media/${post.mediaKey}`}
-              alt="Post attachment"
-              style={{
-                maxWidth: "100%",
-                borderRadius: "8px",
-                maxHeight: "400px",
-                objectFit: "cover",
-              }}
-            />
-          </Box>
-        )}
-
-        {/* Topics */}
-        {post.topics?.length > 0 && (
-          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-            {post.topics.map((topic) => (
               <Typography
-                key={topic}
-                level="body-xs"
                 sx={{
-                  bgcolor: "neutral.100",
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: "sm",
-                  "&:hover": { bgcolor: "neutral.200", cursor: "pointer" },
+                  mt: 1.5,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
                 }}
               >
-                #{topic}
+                {post.content}
               </Typography>
-            ))}
+
+              {post.mediaKey && (
+                <Box
+                  sx={{
+                    mt: 2,
+                    borderRadius: "lg",
+                    overflow: "hidden",
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={`${API_V1}/media/${post.mediaKey}`}
+                    alt="Post attachment"
+                    sx={{
+                      width: "100%",
+                      maxHeight: "400px",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </Box>
+              )}
+
+              {post.topics && post.topics.length > 0 && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mt: 2,
+                  }}
+                >
+                  {post.topics.map((topic) => (
+                    <Typography
+                      key={topic}
+                      level="body-xs"
+                      sx={{
+                        color: "primary",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
+                    >
+                      #{topic}
+                    </Typography>
+                  ))}
+                </Box>
+              )}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mt: 2,
+                  pt: 2,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <Button
+                  size="sm"
+                  variant="plain"
+                  color={post.userVote === "upvote" ? "danger" : "neutral"}
+                  onClick={() => votePost({ postId: post.id, vote: "upvote" })}
+                  disabled={isVoting}
+                  startDecorator={
+                    post.userVote === "upvote" ? (
+                      <Favorite sx={{ fontSize: 16 }} />
+                    ) : (
+                      <Favorite sx={{ fontSize: 16 }} />
+                    )
+                  }
+                  sx={{
+                    borderRadius: "20px",
+                    px: 2,
+                    "&:hover": {
+                      bgcolor:
+                        post.userVote === "upvote"
+                          ? "rgba(244, 67, 54, 0.1)"
+                          : "action.hover",
+                    },
+                  }}
+                >
+                  {post.upvotes}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="plain"
+                  color={post.userVote === "downvote" ? "primary" : "neutral"}
+                  onClick={() => votePost({ postId: post.id, vote: "downvote" })}
+                  disabled={isVoting}
+                  startDecorator={<HeartBroken sx={{ fontSize: 16 }} />}
+                  sx={{
+                    borderRadius: "20px",
+                    px: 2,
+                    "&:hover": {
+                      bgcolor:
+                        post.userVote === "downvote"
+                          ? "rgba(102, 126, 234, 0.1)"
+                          : "action.hover",
+                    },
+                  }}
+                >
+                  {post.downvotes}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="plain"
+                  color={isExpanded ? "primary" : "neutral"}
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  startDecorator={<ChatBubbleOutline sx={{ fontSize: 16 }} />}
+                  sx={{
+                    borderRadius: "20px",
+                    px: 2,
+                    ml: "auto",
+                    "&:hover": {
+                      bgcolor: isExpanded
+                        ? "rgba(102, 126, 234, 0.1)"
+                        : "action.hover",
+                    },
+                  }}
+                >
+                  {post.commentCount || 0}
+                </Button>
+
+                {!isOwnPost && (
+                  <IconButton
+                    size="sm"
+                    variant="plain"
+                    color="neutral"
+                    title="Connect"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsConnectionDialogOpen(true);
+                    }}
+                    sx={{
+                      borderRadius: "50%",
+                      "&:hover": { bgcolor: "action.hover", color: "primary" },
+                    }}
+                  >
+                    <PersonAdd fontSize="small" />
+                  </IconButton>
+                )}
+              </Box>
+
+              {isExpanded && (
+                <Box sx={{ mt: 2 }}>
+                  <CommentsSection postId={post.id} />
+                </Box>
+              )}
+            </Box>
           </Box>
-        )}
+        </CardContent>
+      </Card>
 
-        {/* Post Actions */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            pt: 1,
-            borderTop: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          {/* Vote Buttons */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton
-              disabled={isVoting}
-              variant={post.userVote === "upvote" ? "soft" : "plain"}
-              color={post.userVote === "upvote" ? "danger" : "neutral"}
-              onClick={() => votePost({ postId: post.id, vote: "upvote" })}
-              size="sm"
-            >
-              <Favorite />
-            </IconButton>
-
-            <Typography level="body-sm" fontWeight="md">
-              {post.upvotes}
-            </Typography>
-
-            <IconButton
-              disabled={isVoting}
-              variant={post.userVote === "downvote" ? "soft" : "plain"}
-              color={post.userVote === "downvote" ? "primary" : "neutral"}
-              onClick={() => votePost({ postId: post.id, vote: "downvote" })}
-              size="sm"
-            >
-              <HeartBroken />
-            </IconButton>
-
-            <Typography level="body-xs">{post.downvotes}</Typography>
-          </Box>
-
-          {/* Comment Button */}
-          <IconButton
-            size="sm"
-            sx={{ px: 1 }}
-            variant={isExpanded ? "soft" : "plain"}
-            color={isExpanded ? "primary" : "neutral"}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            <ChatBubble />
-            <Typography level="body-xs" sx={{ ml: 0.5 }}>
-              {post.commentCount || 0}
-            </Typography>
-          </IconButton>
-        </Box>
-
-        {/* Comments Section */}
-        {isExpanded && <CommentsSection postId={post.id} />}
-
-        {/* Message Request Dialog */}
-        <ConnectionRequestDialog
-          open={isConnectionDialogOpen}
-          onClose={() => setIsConnectionDialogOpen(false)}
-          recipientUsername={post.author?.username || "this user"}
-          onSubmit={handleSendConnectionRequest}
-        />
-      </CardContent>
-    </Card>
+      <ConnectionRequestDialog
+        open={isConnectionDialogOpen}
+        onClose={() => setIsConnectionDialogOpen(false)}
+        recipientUsername={post.author?.username || "this user"}
+        onSubmit={handleSendConnectionRequest}
+      />
+    </>
   );
 }
 
