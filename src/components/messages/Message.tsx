@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Typography } from "@mui/joy";
 import { useGetMe } from "@/hooks/useUsers";
 import UserList from "./UserList";
@@ -9,7 +9,7 @@ import type { User } from "@/services/api/user.api";
 import { useConnectionsFetch } from "@/hooks/useConnection";
 
 export default function Messages() {
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const { data: currentUser } = useGetMe();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +17,16 @@ export default function Messages() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -39,29 +49,48 @@ export default function Messages() {
     setMessages((prev) => [...payload, ...prev]);
   });
 
+  useSocketEvent("chat:error", (error: { message: string }) => {
+    console.error("Chat error:", error.message);
+    setSendingMessage(false);
+  });
+
   if (!currentUser) {
     return null;
   }
 
   const sendMessage = () => {
-    if (!(socket && selectedUser && message.trim())) return;
+    if (!socket || !isConnected || !selectedUser || !message.trim() || sendingMessage) {
+      return;
+    }
 
-    socket.emit("chat:message", {
-      content: message,
-      room: { type: "single", id: selectedUser.id },
-    });
+    setSendingMessage(true);
 
-    setMessage("");
+    socket.emit(
+      "chat:message",
+      {
+        content: message,
+        room: { type: "single", id: selectedUser.id },
+      },
+      (response: { success?: boolean; error?: string }) => {
+        if (response?.success) {
+          setMessage("");
+        } else {
+          console.error("Failed to send message:", response?.error);
+        }
+        setSendingMessage(false);
+      }
+    );
   };
 
   const joinChat = (userId: string) => {
-    if (!socket) return;
+    if (!socket || !isConnected) return;
     socket.emit("chat:join", { type: "single", id: userId });
   };
 
   const handleSelectUser = (user: User) => {
     setSelectedUser(user);
     joinChat(user.id);
+    setMessages([]);
     if (isMobile) {
       setShowSidebar(false);
     }
@@ -99,6 +128,9 @@ export default function Messages() {
             onSendMessage={sendMessage}
             onBack={isMobile ? handleBackToUsers : undefined}
             isMobile={isMobile}
+            isConnected={isConnected}
+            isSending={sendingMessage}
+            messagesEndRef={messagesEndRef}
           />
         ) : (
           <Box
