@@ -21,6 +21,9 @@ interface ChatViewProps {
   onSendMessage: () => void;
   onBack?: () => void;
   isMobile?: boolean;
+  isConnected?: boolean;
+  isSending?: boolean;
+  messagesEndRef?: React.RefObject<HTMLDivElement>;
 }
 
 export default function ChatView({
@@ -32,6 +35,9 @@ export default function ChatView({
   onSendMessage,
   onBack,
   isMobile = false,
+  isConnected = true,
+  isSending = false,
+  messagesEndRef,
 }: ChatViewProps) {
   return (
     <Box
@@ -124,13 +130,14 @@ export default function ChatView({
           bgcolor: "background.surface",
         }}
       >
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
           <Textarea
-            placeholder="Type a message..."
+            placeholder={isConnected ? "Type a message..." : "Connecting..."}
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
             minRows={1}
             maxRows={4}
+            disabled={!isConnected || isSending}
             sx={{
               flex: 1,
               "& .MuiInput-input": { p: 1.25 },
@@ -140,13 +147,14 @@ export default function ChatView({
             type="submit"
             variant="solid"
             color="primary"
-            disabled={!message.trim()}
-            sx={{ alignSelf: "flex-end", borderRadius: "20px", px: 2 }}
+            disabled={!message.trim() || !isConnected || isSending}
+            sx={{ borderRadius: "20px", px: 2 }}
           >
-            <SendIcon fontSize="small" />
+            {isSending ? "..." : <SendIcon fontSize="small" />}
           </Button>
         </Box>
       </Box>
+      <div ref={messagesEndRef} />
     </Box>
   );
 }
