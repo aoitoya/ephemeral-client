@@ -1,5 +1,6 @@
 import { Box, Typography, Sheet } from "@mui/joy";
 import type { Message } from "./types";
+import { formatDistanceToNow } from "date-fns";
 
 interface MessageBubbleProps {
   message: Message;
@@ -13,30 +14,32 @@ export default function MessageBubble({
   return (
     <Box
       sx={{
-        alignSelf: isOwnMessage ? "flex-end" : "flex-start",
-        maxWidth: { xs: "90%", sm: "70%" },
+        display: "flex",
+        justifyContent: isOwnMessage ? "flex-end" : "flex-start",
+        maxWidth: { xs: "85%", sm: "70%" },
+        mx: "auto",
       }}
     >
       <Sheet
-        variant={isOwnMessage ? "soft" : "outlined"}
+        variant="soft"
         color={isOwnMessage ? "primary" : "neutral"}
         sx={{
           p: 1.5,
           borderRadius: "lg",
-          borderTopLeftRadius: isOwnMessage ? "lg" : 0,
           borderTopRightRadius: isOwnMessage ? 0 : "lg",
+          borderBottomRightRadius: isOwnMessage ? 0 : 4,
+          borderTopLeftRadius: isOwnMessage ? 4 : "lg",
+          borderBottomLeftRadius: isOwnMessage ? "lg" : 4,
+          bgcolor: isOwnMessage ? "primary.softColor" : "neutral.softBg",
         }}
       >
         <Typography level="body-md">{message.content}</Typography>
         <Typography
           level="body-xs"
           color="neutral"
-          sx={{ mt: 0.5, textAlign: "right" }}
+          sx={{ mt: 0.5, display: "block", textAlign: isOwnMessage ? "right" : "left" }}
         >
-          {new Date(message.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
         </Typography>
       </Sheet>
     </Box>

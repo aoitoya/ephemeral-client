@@ -78,7 +78,6 @@ export default function Messages() {
         flexDirection: { xs: "column", md: "row" },
         height: "calc(100vh - 64px)",
         bgcolor: "background.body",
-        position: "relative",
       }}
     >
       <Box
@@ -87,6 +86,7 @@ export default function Messages() {
           display: "flex",
           flexDirection: "column",
           order: { xs: 2, md: 1 },
+          height: { xs: selectedUser ? "100%" : "auto", md: "100%" },
         }}
       >
         {selectedUser ? (
@@ -104,10 +104,11 @@ export default function Messages() {
           <Box
             sx={{
               flex: 1,
-              display: "flex",
+              display: { xs: selectedUser ? "none" : "flex", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
               bgcolor: "background.level1",
+              p: 3,
             }}
           >
             <Typography level="body-md" color="neutral">
@@ -119,7 +120,7 @@ export default function Messages() {
 
       <Box
         sx={{
-          width: { xs: "100%", md: 300 },
+          width: { xs: "100%", md: 320 },
           borderTop: { xs: "1px solid", md: "none" },
           borderColor: "divider",
           bgcolor: "background.surface",
@@ -128,6 +129,8 @@ export default function Messages() {
             xs: showSidebar ? "block" : "none",
             md: "block",
           },
+          height: { xs: showSidebar ? "auto" : 0, md: "100%" },
+          overflow: "hidden",
         }}
       >
         <UserList
