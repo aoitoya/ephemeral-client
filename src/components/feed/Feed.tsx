@@ -1,17 +1,21 @@
+import { useState } from "react";
 import {
   Box,
   Typography,
-  Stack,
   CircularProgress,
-  Alert,
-  Sheet,
+  Button,
+  Tab,
+  TabList,
+  Tabs,
 } from "@mui/joy";
+import { Add as AddIcon, Refresh as RefreshIcon } from "@mui/icons-material";
 import { PostCard } from "./PostCard";
 import { CreatePost } from "./CreatePost";
 import { usePosts } from "@/hooks/usePosts";
 
 export function Feed() {
-  const { posts, isLoading, error, createPost, isCreating } = usePosts();
+  const { posts, isLoading, error, createPost, isCreating, refetch } = usePosts();
+  const [activeTab, setActiveTab] = useState(0);
 
   if (isLoading) {
     return (
@@ -30,110 +34,115 @@ export function Feed() {
 
   if (error) {
     return (
-      <Alert
-        color="danger"
-        variant="soft"
+      <Box
         sx={{
-          maxWidth: 600,
-          mx: "auto",
-          my: 4,
-          boxShadow: "sm",
-          "--Alert-radius": "12px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "60vh",
+          px: 3,
         }}
       >
-        <Typography level="body-md" fontWeight="lg">
-          Error loading posts
+        <Typography level="h4" sx={{ mb: 2 }}>
+          Oops! Something went wrong
         </Typography>
-        <Typography level="body-sm" color="neutral">
+        <Typography level="body-md" color="neutral" sx={{ mb: 3, textAlign: "center" }}>
           {error instanceof Error ? error.message : "An unknown error occurred"}
         </Typography>
-      </Alert>
+        <Button
+          variant="outlined"
+          onClick={() => refetch()}
+          startDecorator={<RefreshIcon />}
+        >
+          Try Again
+        </Button>
+      </Box>
     );
   }
 
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: "100%",
+        maxWidth: 680,
         mx: "auto",
-        px: { xs: 2, sm: 3, md: 4 },
+        px: { xs: 2, sm: 3 },
         py: 3,
       }}
     >
       <Box
         sx={{
-          maxWidth: 800,
-          width: "100%",
-          mx: "auto",
           display: "flex",
-          flexDirection: "column",
-          gap: 3,
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
         }}
       >
-        <CreatePost
-          onSubmit={async (content, file) => {
-            await createPost({ content, file });
-          }}
-          isSubmitting={isCreating}
-        />
+        <Typography level="h3">Feed</Typography>
+        <Button
+          size="sm"
+          variant="plain"
+          onClick={() => refetch()}
+          startDecorator={<RefreshIcon />}
+          sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
+        >
+          Refresh
+        </Button>
+      </Box>
 
-        <Stack spacing={3} sx={{ mt: 1 }}>
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <Box
-                key={post.id}
-                sx={{
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                }}
-              >
-                <PostCard post={post} />
-              </Box>
-            ))
-          ) : (
-            <Sheet
-              variant="soft"
+      <Tabs
+        value={activeTab}
+        onChange={(_, value) => setActiveTab(value as number)}
+        sx={{ mb: 3 }}
+      >
+        <TabList variant="soft" sx={{ borderRadius: "lg" }}>
+          <Tab>For You</Tab>
+          <Tab>Following</Tab>
+          <Tab>Trending</Tab>
+        </TabList>
+      </Tabs>
+
+      <CreatePost
+        onSubmit={async (content, file) => {
+          await createPost({ content, file });
+        }}
+        isSubmitting={isCreating}
+      />
+
+      <Box sx={{ mt: 1 }}>
+        {posts.length > 0 ? (
+          posts.map((post) => <PostCard key={post.id} post={post} />)
+        ) : (
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8,
+              px: 3,
+            }}
+          >
+            <Box
               sx={{
-                p: { xs: 3, sm: 4 },
-                borderRadius: "lg",
-                textAlign: "center",
-                backgroundColor: "background.surface",
-                boxShadow: "sm",
-                border: "1px solid",
-                borderColor: "divider",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  boxShadow: "md",
-                  transform: "translateY(-2px)",
-                },
+                width: 80,
+                height: 80,
+                borderRadius: "50%",
+                bgcolor: "action.hover",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mx: "auto",
+                mb: 3,
               }}
             >
-              <Typography
-                level="h4"
-                component="h2"
-                sx={{
-                  mb: 1.5,
-                  fontWeight: "700",
-                  color: "text.primary",
-                }}
-              >
-                No posts yet
-              </Typography>
-              <Typography
-                level="body-md"
-                sx={{
-                  color: "text.secondary",
-                  maxWidth: "40ch",
-                  mx: "auto",
-                  lineHeight: 1.6,
-                }}
-              >
-                Be the first to share something with the community!
-              </Typography>
-            </Sheet>
-          )}
-        </Stack>
+              <AddIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+            </Box>
+            <Typography level="h4" sx={{ mb: 1.5 }}>
+              No posts yet
+            </Typography>
+            <Typography level="body-md" color="neutral" sx={{ maxWidth: 300, mx: "auto" }}>
+              Be the first to share something with your community!
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
