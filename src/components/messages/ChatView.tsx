@@ -1,10 +1,11 @@
+import { useEffect, useRef } from "react";
 import {
   Box,
   Typography,
   Button,
   IconButton,
   Avatar,
-  Textarea,
+  Input,
 } from "@mui/joy";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -39,6 +40,13 @@ export default function ChatView({
   isSending = false,
   messagesEndRef,
 }: ChatViewProps) {
+  const localRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ref = messagesEndRef || localRef;
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, messagesEndRef]);
+
   return (
     <Box
       sx={{
@@ -67,17 +75,17 @@ export default function ChatView({
           </IconButton>
         )}
         <Avatar
-          size="sm"
+          size="md"
           sx={{ bgcolor: "primary.solidBg" }}
         >
           {user.username.charAt(0).toUpperCase()}
         </Avatar>
-        <Box>
+        <Box sx={{ flex: 1 }}>
           <Typography level="title-sm" sx={{ fontWeight: 600 }}>
             {user.username}
           </Typography>
           <Typography level="body-xs" color="neutral">
-            Online
+            {isConnected ? "Online" : "Offline"}
           </Typography>
         </Box>
       </Box>
@@ -85,12 +93,13 @@ export default function ChatView({
       <Box
         sx={{
           flex: 1,
-          p: 2,
+          px: 2,
+          py: 2,
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 1.5,
-          bgcolor: "background.level1",
+          gap: 1,
+          bgcolor: "transparent",
         }}
       >
         {messages.length === 0 ? (
@@ -103,7 +112,7 @@ export default function ChatView({
             }}
           >
             <Typography level="body-sm" color="neutral">
-              No messages yet. Start the conversation!
+              No messages yet. Say hello!
             </Typography>
           </Box>
         ) : (
@@ -115,6 +124,7 @@ export default function ChatView({
             />
           ))
         )}
+        <div ref={localRef} />
       </Box>
 
       <Box
@@ -124,23 +134,24 @@ export default function ChatView({
           onSendMessage();
         }}
         sx={{
-          p: 2,
+          px: 2,
+          py: 1.5,
           borderTop: "1px solid",
           borderColor: "divider",
           bgcolor: "background.surface",
         }}
       >
         <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
-          <Textarea
-            placeholder={isConnected ? "Type a message..." : "Connecting..."}
+          <Input
+            placeholder={isConnected ? "Message..." : "Connecting..."}
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
-            minRows={1}
-            maxRows={4}
             disabled={!isConnected || isSending}
             sx={{
               flex: 1,
-              "& .MuiInput-input": { p: 1.25 },
+              "--Input-radius": "20px",
+              "--Input-paddingInline": "16px",
+              bgcolor: "action.hover",
             }}
           />
           <Button
@@ -148,13 +159,18 @@ export default function ChatView({
             variant="solid"
             color="primary"
             disabled={!message.trim() || !isConnected || isSending}
-            sx={{ borderRadius: "20px", px: 2 }}
+            sx={{
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+              minWidth: 40,
+              p: 0,
+            }}
           >
-            {isSending ? "..." : <SendIcon fontSize="small" />}
+            <SendIcon fontSize="small" />
           </Button>
         </Box>
       </Box>
-      <div ref={messagesEndRef} />
     </Box>
   );
 }
