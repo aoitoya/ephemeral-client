@@ -17,11 +17,12 @@ export default function MessageBubble({
         display: "flex",
         justifyContent: isOwnMessage ? "flex-end" : "flex-start",
         width: "100%",
+        px: 1.5,
       }}
     >
       <Box
         sx={{
-          maxWidth: "75%",
+          maxWidth: "80%",
           display: "flex",
           flexDirection: "column",
           alignItems: isOwnMessage ? "flex-end" : "flex-start",
@@ -30,16 +31,23 @@ export default function MessageBubble({
         <Box
           sx={{
             px: 2,
-            py: 1.25,
-            borderRadius: 2,
-            borderTopRightRadius: isOwnMessage ? 0 : undefined,
-            borderTopLeftRadius: isOwnMessage ? undefined : 0,
-            bgcolor: isOwnMessage ? "primary.500" : "neutral.100",
-            color: isOwnMessage ? "#fff" : "text.primary",
-            boxShadow: "sm",
+            py: 1.5,
+            borderRadius: 3,
+            borderBottomRightRadius: isOwnMessage ? 4 : 16,
+            borderBottomLeftRadius: isOwnMessage ? 16 : 4,
+            bgcolor: isOwnMessage ? "#667eea" : "#f5f5f5",
+            color: isOwnMessage ? "#fff" : "#1f2937",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
           }}
         >
-          <Typography level="body-sm" sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <Typography
+            level="body-sm"
+            sx={{
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              lineHeight: 1.5,
+            }}
+          >
             {message.content}
           </Typography>
         </Box>
