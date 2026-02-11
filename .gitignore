@@ -1,4 +1,3 @@
 node_modules
 .tanstack/
-routeTree.gen.ts
 dist
