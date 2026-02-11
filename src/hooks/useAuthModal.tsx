@@ -1,18 +1,28 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { AuthModal } from "@/components/auth/AuthModal";
 
 interface AuthModalContextType {
   isAuthModalOpen: boolean;
   authModalMode: "login" | "signup";
-  openAuthModal: (mode?: "login" | "signup") => void;
+  openAuthModal: () => void;
   closeAuthModal: () => void;
 }
 
-const AuthModalContext = createContext<AuthModalContextType | undefined>(undefined);
+const AuthModalContext = createContext<AuthModalContextType | undefined>(
+  undefined,
+);
 
 export function AuthModalProvider({ children }: { children: ReactNode }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<"login" | "signup">("login");
+  const [authModalMode, setAuthModalMode] = useState<"login" | "signup">(
+    "login",
+  );
 
   const openAuthModal = (mode: "login" | "signup" = "login") => {
     setAuthModalMode(mode);
@@ -28,13 +38,20 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
       openAuthModal("login");
     };
     window.addEventListener("auth:unauthorized", handleUnauthorized);
-    return () => window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    return () =>
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
   }, []);
 
   return (
-    <AuthModalContext.Provider value={{ isAuthModalOpen, authModalMode, openAuthModal, closeAuthModal }}>
+    <AuthModalContext.Provider
+      value={{ isAuthModalOpen, authModalMode, openAuthModal, closeAuthModal }}
+    >
       {children}
-      <AuthModal open={isAuthModalOpen} onClose={closeAuthModal} mode={authModalMode} />
+      <AuthModal
+        open={isAuthModalOpen}
+        onClose={closeAuthModal}
+        mode={authModalMode}
+      />
     </AuthModalContext.Provider>
   );
 }
