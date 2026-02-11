@@ -1,7 +1,6 @@
 import { useOnlineConnectionsFetch } from "@/hooks/useConnection";
 import type { User } from "@/services/api/user.api";
 import {
-  List,
   ListItemButton,
   Avatar,
   Typography,
@@ -26,81 +25,93 @@ export default function UserList({
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: 320 },
+        width: { xs: "100%", md: 360 },
         borderRight: "1px solid",
-        borderLeft: "1px solid",
         borderColor: "divider",
         bgcolor: "background.surface",
         height: "100%",
         overflowY: "auto",
       }}
     >
-      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "divider" }}>
-        <Typography level="h4">Messages</Typography>
+      <Box sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}>
+        <Typography level="h4" sx={{ fontWeight: 600 }}>
+          Messages
+        </Typography>
       </Box>
 
       {users.length === 0 ? (
-        <Box sx={{ p: 3, textAlign: "center" }}>
+        <Box sx={{ p: 4, textAlign: "center" }}>
           <Typography level="body-sm" color="neutral">
             No connections yet
           </Typography>
         </Box>
       ) : (
-        <List sx={{ p: 0 }}>
-          {users.map((user) => (
-            <ListItemButton
-              key={user.id}
-              selected={selectedUserId === user.id}
-              onClick={() => onSelectUser(user)}
-              sx={{
-                py: 1.5,
-                px: 2,
-                "&.Mui-selected": {
-                  bgcolor: "action.selected",
-                },
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Box sx={{ position: "relative" }}>
-                  <Avatar
-                    size="md"
-                    sx={{ bgcolor: "primary.solidBg" }}
-                  >
-                    {user.username.charAt(0).toUpperCase()}
-                  </Avatar>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      bgcolor: onlineUserIds.has(user.id) ? "success.solidBg" : "neutral.500",
-                      border: "2px solid var(--joy-palette-background-surface)",
-                    }}
-                  />
+        <Box sx={{ py: 1 }}>
+          {users.map((user) => {
+            const isOnline = onlineUserIds.has(user.id);
+            const isSelected = selectedUserId === user.id;
+
+            return (
+              <ListItemButton
+                key={user.id}
+                selected={isSelected}
+                onClick={() => onSelectUser(user)}
+                sx={{
+                  mx: 1.5,
+                  my: 0.5,
+                  borderRadius: 2,
+                  px: 2,
+                  py: 1.5,
+                  "&.Mui-selected": {
+                    bgcolor: "action.selected",
+                  },
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
+                  <Box sx={{ position: "relative" }}>
+                    <Avatar
+                      size="md"
+                      sx={{ bgcolor: "primary.500" }}
+                    >
+                      {user.username.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: -2,
+                        right: -2,
+                        width: 14,
+                        height: 14,
+                        borderRadius: "50%",
+                        bgcolor: isOnline ? "success.500" : "neutral.400",
+                        border: "2px solid var(--joy-palette-background-surface)",
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      level="body-md"
+                      sx={{
+                        fontWeight: isSelected ? 600 : 500,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {user.username}
+                    </Typography>
+                    <Typography
+                      level="body-xs"
+                      sx={{ color: isOnline ? "success.500" : "text.tertiary" }}
+                    >
+                      {isOnline ? "Online" : "Offline"}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography level="title-sm" sx={{ fontWeight: 500 }}>
-                    {user.username}
-                  </Typography>
-                  <Typography
-                    level="body-xs"
-                    color="neutral"
-                    sx={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {onlineUserIds.has(user.id) ? "Online" : "Offline"}
-                  </Typography>
-                </Box>
-              </Box>
-            </ListItemButton>
-          ))}
-        </List>
+              </ListItemButton>
+            );
+          })}
+        </Box>
       )}
     </Box>
   );

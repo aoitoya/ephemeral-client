@@ -1,6 +1,6 @@
-import { Box, Typography, Sheet } from "@mui/joy";
+import { Box, Typography } from "@mui/joy";
 import type { Message } from "./types";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 
 interface MessageBubbleProps {
   message: Message;
@@ -16,32 +16,45 @@ export default function MessageBubble({
       sx={{
         display: "flex",
         justifyContent: isOwnMessage ? "flex-end" : "flex-start",
-        maxWidth: { xs: "85%", sm: "70%" },
-        mx: "auto",
+        width: "100%",
       }}
     >
-      <Sheet
-        variant="soft"
-        color={isOwnMessage ? "primary" : "neutral"}
+      <Box
         sx={{
-          p: 1.5,
-          borderRadius: "lg",
-          borderTopRightRadius: isOwnMessage ? 0 : "lg",
-          borderBottomRightRadius: isOwnMessage ? 0 : 4,
-          borderTopLeftRadius: isOwnMessage ? 4 : "lg",
-          borderBottomLeftRadius: isOwnMessage ? "lg" : 4,
-          bgcolor: isOwnMessage ? "primary.softColor" : "neutral.softBg",
+          maxWidth: "75%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: isOwnMessage ? "flex-end" : "flex-start",
         }}
       >
-        <Typography level="body-md">{message.content}</Typography>
+        <Box
+          sx={{
+            px: 2,
+            py: 1.25,
+            borderRadius: 2,
+            borderTopRightRadius: isOwnMessage ? 0 : undefined,
+            borderTopLeftRadius: isOwnMessage ? undefined : 0,
+            bgcolor: isOwnMessage ? "primary.500" : "neutral.100",
+            color: isOwnMessage ? "primary.contrastText" : "text.primary",
+            boxShadow: "sm",
+          }}
+        >
+          <Typography level="body-sm" sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {message.content}
+          </Typography>
+        </Box>
         <Typography
           level="body-xs"
-          color="neutral"
-          sx={{ mt: 0.5, display: "block", textAlign: isOwnMessage ? "right" : "left" }}
+          sx={{
+            mt: 0.5,
+            px: 0.5,
+            color: "text.tertiary",
+            fontSize: "0.65rem",
+          }}
         >
-          {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+          {format(new Date(message.createdAt), "h:mm a")}
         </Typography>
-      </Sheet>
+      </Box>
     </Box>
   );
 }
