@@ -5,7 +5,6 @@ import {
   CardContent,
   List,
   ListItem,
-  ListItemButton,
   Skeleton,
   Typography,
 } from "@mui/joy";
@@ -51,22 +50,12 @@ export default function ConnectionsList() {
         <List>
           {connections.map((connection: Connection) => (
             <ListItem key={connection.id}>
-              <ListItemButton
-                component="a"
-                href={`/profile/${connection.user.id}`}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
-                <Avatar alt={connection.user.username} />
-                <ListItemContent>
-                  <Typography level="title-sm">
-                    {connection.user.username}
-                  </Typography>
-                </ListItemContent>
-              </ListItemButton>
+              <Avatar alt={connection.user.username} />
+              <ListItemContent>
+                <Typography level="title-sm">
+                  {connection.user.username}
+                </Typography>
+              </ListItemContent>
             </ListItem>
           ))}
         </List>
