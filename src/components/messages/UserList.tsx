@@ -1,11 +1,6 @@
 import { useOnlineConnectionsFetch } from "@/hooks/useConnection";
 import type { User } from "@/services/api/user.api";
-import {
-  ListItemButton,
-  Avatar,
-  Typography,
-  Box,
-} from "@mui/joy";
+import { ListItemButton, Avatar, Typography, Box } from "@mui/joy";
 
 interface UserListProps {
   users: User[];
@@ -33,7 +28,9 @@ export default function UserList({
         overflowY: "auto",
       }}
     >
-      <Box sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}>
+      <Box
+        sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}
+      >
         <Typography level="h4" sx={{ fontWeight: 600 }}>
           Messages
         </Typography>
@@ -57,7 +54,6 @@ export default function UserList({
                 selected={isSelected}
                 onClick={() => onSelectUser(user)}
                 sx={{
-                  mx: 1.5,
                   my: 0.5,
                   borderRadius: 2,
                   px: 2,
@@ -67,12 +63,16 @@ export default function UserList({
                   },
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    width: "100%",
+                  }}
+                >
                   <Box sx={{ position: "relative" }}>
-                    <Avatar
-                      size="md"
-                      sx={{ bgcolor: "primary.500" }}
-                    >
+                    <Avatar size="md" sx={{ bgcolor: "primary.500" }}>
                       {user.username.charAt(0).toUpperCase()}
                     </Avatar>
                     <Box
@@ -84,7 +84,8 @@ export default function UserList({
                         height: 14,
                         borderRadius: "50%",
                         bgcolor: isOnline ? "success.500" : "neutral.400",
-                        border: "2px solid var(--joy-palette-background-surface)",
+                        border:
+                          "2px solid var(--joy-palette-background-surface)",
                       }}
                     />
                   </Box>

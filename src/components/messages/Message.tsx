@@ -167,6 +167,8 @@ export default function Messages() {
             xs: showSidebar ? "block" : "none",
             md: "block",
           },
+          borderLeft: "1px solid",
+          borderLeftColor: "divider",
           height: { xs: showSidebar ? "auto" : 0, md: "100%" },
           overflow: "hidden",
         }}
