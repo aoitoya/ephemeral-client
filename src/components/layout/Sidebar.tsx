@@ -1,29 +1,53 @@
-import { Link } from "@tanstack/react-router";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemButton,
-  Typography,
-  useTheme,
-} from "@mui/joy";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Box, ListItemButton, Typography, useTheme } from "@mui/joy";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import PeopleOutlineRoundedIcon from "@mui/icons-material/PeopleOutlineRounded";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 
-const ListItemIcon = ({ children }: { children: React.ReactNode }) => (
-  <Box component="span" sx={{ display: "inline-flex", mr: 1 }}>
-    {children}
-  </Box>
-);
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ReactNode;
+}
 
-const ListItemContent = ({ children }: { children: React.ReactNode }) => (
-  <Box component="span">{children}</Box>
-);
+const navItems: NavItem[] = [
+  { to: "/feed", label: "Feed", icon: <HomeRoundedIcon /> },
+  { to: "/messeges", label: "Messages", icon: <ChatBubbleOutlineRoundedIcon /> },
+  { to: "/connections", label: "Connections", icon: <PeopleOutlineRoundedIcon /> },
+  { to: "/notifications", label: "Notifications", icon: <NotificationsRoundedIcon /> },
+];
 
-const Sidebar = () => {
+function NavLink({ to, label, icon, isActive }: NavItem & { isActive: boolean }) {
   const theme = useTheme();
+
+  return (
+    <Link to={to} style={{ width: "100%", textDecoration: "none" }}>
+      <ListItemButton
+        variant={isActive ? "soft" : "plain"}
+        color={isActive ? "primary" : "neutral"}
+        sx={{
+          borderRadius: "12px",
+          py: 1.25,
+          "&:hover": {
+            backgroundColor: theme.vars.palette.primary.softHoverBg,
+          },
+        }}
+      >
+        <Box component="span" sx={{ display: "inline-flex", mr: 1.5 }}>
+          {icon}
+        </Box>
+        <Typography level="body-md" sx={{ fontWeight: isActive ? 600 : 400 }}>
+          {label}
+        </Typography>
+      </ListItemButton>
+    </Link>
+  );
+}
+
+export default function Sidebar() {
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
     <Box
@@ -42,125 +66,28 @@ const Sidebar = () => {
     >
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
           px: 2,
+          mb: 3,
         }}
       >
         <Typography
           level="h4"
           component="h1"
           sx={{
-            fontWeight: "bold",
+            fontWeight: 700,
             color: "primary.plainColor",
+            letterSpacing: "-0.5px",
           }}
         >
           Ephemeral
         </Typography>
       </Box>
 
-      <List sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}>
-        <ListItem>
-          <Link to="/feed" style={{ width: "100%", textDecoration: "none" }}>
-            {({ isActive }: { isActive: boolean }) => (
-              <ListItemButton
-                variant={isActive ? "soft" : "plain"}
-                color={isActive ? "primary" : "neutral"}
-                sx={{
-                  borderRadius: "8px",
-                  "&:hover": {
-                    backgroundColor: theme.vars.palette.primary.softHoverBg,
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <HomeRoundedIcon />
-                </ListItemIcon>
-                <ListItemContent>Feed</ListItemContent>
-              </ListItemButton>
-            )}
-          </Link>
-        </ListItem>
-
-        <ListItem>
-          <Link
-            to="/messeges"
-            style={{ width: "100%", textDecoration: "none" }}
-          >
-            {({ isActive }: { isActive: boolean }) => (
-              <ListItemButton
-                variant={isActive ? "soft" : "plain"}
-                color={isActive ? "primary" : "neutral"}
-                sx={{
-                  borderRadius: "8px",
-                  "&:hover": {
-                    backgroundColor: theme.vars.palette.primary.softHoverBg,
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <ChatBubbleOutlineRoundedIcon />
-                </ListItemIcon>
-                <ListItemContent>Messages</ListItemContent>
-              </ListItemButton>
-            )}
-          </Link>
-        </ListItem>
-
-        <ListItem>
-          <Link
-            to="/connections"
-            style={{ width: "100%", textDecoration: "none" }}
-          >
-            {({ isActive }: { isActive: boolean }) => (
-              <ListItemButton
-                variant={isActive ? "soft" : "plain"}
-                color={isActive ? "primary" : "neutral"}
-                sx={{
-                  borderRadius: "8px",
-                  "&:hover": {
-                    backgroundColor: theme.vars.palette.primary.softHoverBg,
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <PeopleOutlineRoundedIcon />
-                </ListItemIcon>
-                <ListItemContent>Connections</ListItemContent>
-              </ListItemButton>
-            )}
-          </Link>
-        </ListItem>
-
-        <ListItem>
-          <Link
-            to="/notifications"
-            style={{ width: "100%", textDecoration: "none" }}
-          >
-            {({ isActive }: { isActive: boolean }) => (
-              <ListItemButton
-                variant={isActive ? "soft" : "plain"}
-                color={isActive ? "primary" : "neutral"}
-                sx={{
-                  borderRadius: "8px",
-                  "&:hover": {
-                    backgroundColor: theme.vars.palette.primary.softHoverBg,
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <NotificationsRoundedIcon />
-                </ListItemIcon>
-                <ListItemContent>Notifications</ListItemContent>
-              </ListItemButton>
-            )}
-          </Link>
-        </ListItem>
-      </List>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+        {navItems.map((item) => (
+          <NavLink key={item.to} {...item} isActive={currentPath === item.to} />
+        ))}
+      </Box>
     </Box>
   );
-};
-
-export default Sidebar;
+}

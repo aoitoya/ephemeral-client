@@ -65,7 +65,7 @@ export function PostCard({ post }: PostCardProps) {
           },
         }}
       >
-        <CardContent sx={{ p: 1 }}>
+        <CardContent>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Avatar
               size="md"
