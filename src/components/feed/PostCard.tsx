@@ -65,7 +65,7 @@ export function PostCard({ post }: PostCardProps) {
           },
         }}
       >
-        <CardContent sx={{ p: 2.5 }}>
+        <CardContent sx={{ p: 1 }}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Avatar
               size="md"
@@ -213,7 +213,9 @@ export function PostCard({ post }: PostCardProps) {
                   size="sm"
                   variant="plain"
                   color={post.userVote === "downvote" ? "primary" : "neutral"}
-                  onClick={() => votePost({ postId: post.id, vote: "downvote" })}
+                  onClick={() =>
+                    votePost({ postId: post.id, vote: "downvote" })
+                  }
                   disabled={isVoting}
                   startDecorator={<HeartBroken sx={{ fontSize: 16 }} />}
                   sx={{

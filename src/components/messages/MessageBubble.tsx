@@ -36,13 +36,13 @@ export default function MessageBubble({
             borderBottomRightRadius: isOwnMessage ? 4 : 16,
             borderBottomLeftRadius: isOwnMessage ? 16 : 4,
             bgcolor: isOwnMessage ? "#4f46e5" : "#374151",
-            color: "#ffffff",
             boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
           }}
         >
           <Typography
             level="body-sm"
             sx={{
+              color: "#ffffff",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
               lineHeight: 1.5,

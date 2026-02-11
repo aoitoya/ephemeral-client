@@ -56,7 +56,7 @@ export default function ChatView({
           alignItems: "center",
           gap: 1.5,
           px: 2,
-          py: 1.5,
+          py: 1.4,
           borderBottom: "1px solid",
           borderColor: "divider",
           bgcolor: "background.surface",
