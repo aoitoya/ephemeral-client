@@ -35,7 +35,7 @@ export default function MessageBubble({
             borderTopRightRadius: isOwnMessage ? 0 : undefined,
             borderTopLeftRadius: isOwnMessage ? undefined : 0,
             bgcolor: isOwnMessage ? "primary.500" : "neutral.100",
-            color: isOwnMessage ? "primary.contrastText" : "text.primary",
+            color: isOwnMessage ? "#fff" : "text.primary",
             boxShadow: "sm",
           }}
         >

@@ -13,7 +13,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (user) {
       const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
-      console.log("Connecting socket to:", apiUrl);
 
       const newSocket = io(apiUrl, {
         auth: {
@@ -26,13 +25,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       });
 
       newSocket.on("connect", () => {
-        console.log("Socket connected:", newSocket.id);
         setIsConnected(true);
         setConnectionError(null);
       });
 
       newSocket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error.message);
         setConnectionError(error.message);
       });
 
