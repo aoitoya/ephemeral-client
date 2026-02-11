@@ -3,7 +3,7 @@ import { Box, ListItemButton, Typography, useTheme } from "@mui/joy";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import PeopleOutlineRoundedIcon from "@mui/icons-material/PeopleOutlineRounded";
-import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
+// import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 
 interface NavItem {
   to: string;
@@ -13,12 +13,29 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: "/feed", label: "Feed", icon: <HomeRoundedIcon /> },
-  { to: "/messeges", label: "Messages", icon: <ChatBubbleOutlineRoundedIcon /> },
-  { to: "/connections", label: "Connections", icon: <PeopleOutlineRoundedIcon /> },
-  { to: "/notifications", label: "Notifications", icon: <NotificationsRoundedIcon /> },
+  {
+    to: "/messeges",
+    label: "Messages",
+    icon: <ChatBubbleOutlineRoundedIcon />,
+  },
+  {
+    to: "/connections",
+    label: "Connections",
+    icon: <PeopleOutlineRoundedIcon />,
+  },
+  // {
+  //   to: "/notifications",
+  //   label: "Notifications",
+  //   icon: <NotificationsRoundedIcon />,
+  // },
 ];
 
-function NavLink({ to, label, icon, isActive }: NavItem & { isActive: boolean }) {
+function NavLink({
+  to,
+  label,
+  icon,
+  isActive,
+}: NavItem & { isActive: boolean }) {
   const theme = useTheme();
 
   return (
@@ -29,6 +46,7 @@ function NavLink({ to, label, icon, isActive }: NavItem & { isActive: boolean })
         sx={{
           borderRadius: "12px",
           py: 1.25,
+          px: 2.5,
           "&:hover": {
             backgroundColor: theme.vars.palette.primary.softHoverBg,
           },
