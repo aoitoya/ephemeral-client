@@ -1,12 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  Avatar,
-  Input,
-} from "@mui/joy";
+import { Box, Typography, Button, IconButton, Avatar, Input } from "@mui/joy";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MessageBubble from "./MessageBubble";
@@ -74,10 +67,7 @@ export default function ChatView({
             <ArrowBackIcon />
           </IconButton>
         )}
-        <Avatar
-          size="md"
-          sx={{ bgcolor: "primary.solidBg" }}
-        >
+        <Avatar size="md" sx={{ bgcolor: "primary.solidBg" }}>
           {user.username.charAt(0).toUpperCase()}
         </Avatar>
         <Box sx={{ flex: 1 }}>
@@ -136,6 +126,7 @@ export default function ChatView({
         sx={{
           px: 2,
           py: 1.5,
+          pb: 4,
           borderTop: "1px solid",
           borderColor: "divider",
           bgcolor: "background.surface",

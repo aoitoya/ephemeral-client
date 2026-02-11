@@ -59,7 +59,13 @@ export default function Messages() {
   }
 
   const sendMessage = () => {
-    if (!socket || !isConnected || !selectedUser || !message.trim() || sendingMessage) {
+    if (
+      !socket ||
+      !isConnected ||
+      !selectedUser ||
+      !message.trim() ||
+      sendingMessage
+    ) {
       return;
     }
 
@@ -78,7 +84,7 @@ export default function Messages() {
           console.error("Failed to send message:", response?.error);
         }
         setSendingMessage(false);
-      }
+      },
     );
   };
 
@@ -105,7 +111,7 @@ export default function Messages() {
       sx={{
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
-        height: "calc(100vh - 64px)",
+        height: "100vh",
         bgcolor: "background.body",
       }}
     >
