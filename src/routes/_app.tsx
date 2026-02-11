@@ -26,7 +26,6 @@ function RouteComponent() {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3 },
           backgroundColor: "#fafafa",
           height: "100vh",
           overflowY: "auto",
