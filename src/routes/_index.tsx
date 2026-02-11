@@ -1,10 +1,16 @@
 import React from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Box, Typography, Tabs, TabList, Tab, TabPanel } from "@mui/joy";
 import { LoginForm } from "../components/auth/LoginForm";
 import { SignupForm } from "../components/auth/SignupForm";
+import { TokenService } from "@/services/token-service";
 
 export const Route = createFileRoute("/_index")({
+  beforeLoad: () => {
+    if (TokenService.getToken()) {
+      throw redirect({ to: "/feed" });
+    }
+  },
   component: HomePage,
 });
 
