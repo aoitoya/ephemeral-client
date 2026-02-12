@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Typography } from "@mui/joy";
-import { useGetMe } from "@/hooks/useUsers";
+import { useCurrentUser } from "@/hooks/useAuth";
 import UserList from "./UserList";
 import ChatView from "./ChatView";
 import type { Message } from "./types";
@@ -10,7 +10,7 @@ import { useConnectionsFetch } from "@/hooks/useConnection";
 
 export default function Messages() {
   const { socket, isConnected } = useSocket();
-  const { data: currentUser } = useGetMe();
+  const { data: currentUser } = useCurrentUser();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const { data: connections = [] } = useConnectionsFetch({ status: "active" });

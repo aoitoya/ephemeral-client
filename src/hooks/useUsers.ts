@@ -6,9 +6,3 @@ export const useGetUsers = () => {
     staleTime: 5 * 60 * 1000,
   });
 };
-
-export const useGetMe = () => {
-  return useAuthenticatedQuery(["me"], () => userAPI.getMe(), {
-    staleTime: Number.POSITIVE_INFINITY,
-  });
-};
