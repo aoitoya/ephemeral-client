@@ -20,9 +20,4 @@ export const authAPI = {
     const response = await apiClient.post("/users/refresh-token");
     return response.data;
   },
-
-  getCurrentUser: async () => {
-    const response = await apiClient.get("/users/me");
-    return response.data;
-  },
 } as const;
