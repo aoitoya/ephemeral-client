@@ -12,7 +12,7 @@ export const userAPI = {
     const response = await apiClient.get("/users");
     return response.data;
   },
-  getMe: async (): Promise<{ id: string; username: string }> => {
+  getMe: async (): Promise<User> => {
     const response = await apiClient.get("/users/me");
     return response.data;
   },

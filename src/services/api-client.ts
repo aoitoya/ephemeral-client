@@ -24,6 +24,7 @@ let failedRequestsQueue: Array<{
 apiClient.interceptors.request.use((config) => {
   const csrf = Cookies.get("XSRF-TOKEN");
   if (csrf) config.headers["x-xsrf-token"] = csrf;
+  console.log(config);
   return config;
 });
 
@@ -60,7 +61,9 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.token}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        failedRequestsQueue.forEach(({ reject }) => reject(refreshError as Error));
+        failedRequestsQueue.forEach(({ reject }) =>
+          reject(refreshError as Error),
+        );
         failedRequestsQueue = [];
 
         TokenService.clearToken();
