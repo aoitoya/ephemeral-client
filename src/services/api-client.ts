@@ -56,7 +56,9 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => {
     console.log("[API] Response:", response.config.url, "Status:", response.status);
-    console.log("[API] Set-Cookie headers:", response.headers["set-cookie"]);
+    console.log("[API] set-cookie (lowercase):", response.headers["set-cookie"]);
+    console.log("[API] Set-Cookie:", response.headers["Set-Cookie"]);
+    console.log("[API] Access-Control-Allow-Origin:", response.headers["access-control-allow-origin"]);
     return response;
   },
   async (error) => {

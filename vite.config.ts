@@ -42,6 +42,14 @@ export default defineConfig(() => {
           target: "https://localhost:3000",
           changeOrigin: true,
           secure: false,
+          configure: (_proxy, _options) => {
+            _proxy.on("proxyRes", (proxyRes) => {
+              const setCookie = proxyRes.headers["set-cookie"];
+              if (setCookie) {
+                console.log("[Proxy] Set-Cookie received:", setCookie);
+              }
+            });
+          },
         },
         "/socket.io": {
           target: "https://localhost:3000",
