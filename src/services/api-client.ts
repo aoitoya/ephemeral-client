@@ -21,15 +21,44 @@ let failedRequestsQueue: Array<{
   reject: (error: Error) => void;
 }> = [];
 
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(";").shift() || null;
+  }
+  return null;
+}
+
 apiClient.interceptors.request.use((config) => {
-  const csrf = Cookies.get("XSRF-TOKEN");
-  if (csrf) config.headers["x-xsrf-token"] = csrf;
-  console.log(config);
+  console.log("[API] Request to:", config.url);
+  console.log("[API] document.cookie:", document.cookie);
+  
+  // Try js-cookie first
+  let csrf = Cookies.get("XSRF-TOKEN");
+  console.log("[API] Cookies.get XSRF-TOKEN:", csrf || "NOT FOUND");
+  
+  // Fallback to manual parsing
+  if (!csrf) {
+    csrf = getCookie("XSRF-TOKEN") || undefined;
+    console.log("[API] Manual parse XSRF-TOKEN:", csrf || "NOT FOUND");
+  }
+  
+  if (csrf) {
+    config.headers["x-xsrf-token"] = csrf;
+    console.log("[API] Set x-xsrf-token header:", csrf);
+  } else {
+    console.log("[API] No XSRF-TOKEN cookie found - header NOT set");
+  }
   return config;
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log("[API] Response:", response.config.url, "Status:", response.status);
+    console.log("[API] Set-Cookie headers:", response.headers["set-cookie"]);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
