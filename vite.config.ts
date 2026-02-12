@@ -4,9 +4,18 @@ import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Generate SSL certificates for localhost if they don't exist
+const certPath = resolve(__dirname, "localhost.crt");
+const keyPath = resolve(__dirname, "localhost.key");
+
+if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
+  console.log("[Vite] Generating SSL certificates for localhost...");
+}
 
 // https://vite.dev/config/
 export default defineConfig(() => {
@@ -24,14 +33,20 @@ export default defineConfig(() => {
       },
     },
     server: {
+      https: {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath),
+      },
       proxy: {
         "/api": {
-          target: "http://localhost:3000",
+          target: "https://localhost:3000",
           changeOrigin: true,
+          secure: false,
         },
         "/socket.io": {
-          target: "http://localhost:3000",
+          target: "https://localhost:3000",
           ws: true,
+          secure: false,
         },
       },
       host: true,
