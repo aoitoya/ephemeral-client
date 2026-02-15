@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: true,
+      host: "ephemeral.to",
       proxy: {
         "/api": {
           target: env.VITE_API_URL,
@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
           secure: true,
         },
         "/socket.io": {
-          target: "http://localhost:3000",
+          target: env.VITE_API_URL,
           ws: true,
         },
       },
