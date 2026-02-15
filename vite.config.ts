@@ -1,24 +1,14 @@
 // vite.config.ts
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Generate SSL certificates for localhost if they don't exist
-const certPath = resolve(__dirname, "localhost.crt");
-const keyPath = resolve(__dirname, "localhost.key");
-
-if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
-  console.log("[Vite] Generating SSL certificates for localhost...");
-}
+import { resolve } from "path";
+import mkcert from "vite-plugin-mkcert";
 
 // https://vite.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, import.meta.dirname, "");
+
   return {
     plugins: [
       tanstackRouter({
@@ -26,6 +16,7 @@ export default defineConfig(() => {
         autoCodeSplitting: true,
       }),
       react(),
+      mkcert(),
     ],
     resolve: {
       alias: {
@@ -33,31 +24,18 @@ export default defineConfig(() => {
       },
     },
     server: {
-      https: {
-        key: fs.readFileSync(keyPath),
-        cert: fs.readFileSync(certPath),
-      },
+      host: true,
       proxy: {
         "/api": {
-          target: "https://localhost:3000",
+          target: env.VITE_API_URL,
           changeOrigin: true,
-          secure: false,
-          configure: (_proxy, _options) => {
-            _proxy.on("proxyRes", (proxyRes) => {
-              const setCookie = proxyRes.headers["set-cookie"];
-              if (setCookie) {
-                console.log("[Proxy] Set-Cookie received:", setCookie);
-              }
-            });
-          },
+          secure: true,
         },
         "/socket.io": {
-          target: "https://localhost:3000",
+          target: "http://localhost:3000",
           ws: true,
-          secure: false,
         },
       },
-      host: true,
     },
   };
 });
