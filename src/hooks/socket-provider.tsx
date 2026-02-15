@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useCurrentUser } from "./useAuth";
-import { TokenService } from "@/services/token-service";
 import { SocketContext } from "./socket-context";
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
@@ -15,9 +14,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
 
       const newSocket = io(apiUrl, {
-        auth: {
-          token: TokenService.getToken(),
-        },
         transports: ["websocket", "polling"],
         reconnection: true,
         reconnectionAttempts: 5,

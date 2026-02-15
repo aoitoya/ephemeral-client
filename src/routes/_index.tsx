@@ -3,12 +3,17 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Box, Typography, Tabs, TabList, Tab, TabPanel } from "@mui/joy";
 import { LoginForm } from "../components/auth/LoginForm";
 import { SignupForm } from "../components/auth/SignupForm";
-import { TokenService } from "@/services/token-service";
+import { userAPI } from "@/services/api/user.api";
 
 export const Route = createFileRoute("/_index")({
-  beforeLoad: () => {
-    if (TokenService.getToken()) {
+  beforeLoad: async () => {
+    try {
+      await userAPI.getMe();
       throw redirect({ to: "/feed" });
+    } catch (error) {
+      const err = error as { response?: { status?: number } };
+      if (err.response?.status === 401) return;
+      throw error;
     }
   },
   component: HomePage,

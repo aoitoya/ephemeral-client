@@ -1,6 +1,4 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useTokenRefresh } from "../hooks/useTokenRefresh";
-import { TokenService } from "./token-service";
 import type { UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 
 type QueryOptions<T> = Omit<UseQueryOptions<T, unknown, T, unknown[]>, "queryKey">;
@@ -10,24 +8,9 @@ export const useAuthenticatedQuery = <T>(
   queryFn: () => Promise<T>,
   options = {} as QueryOptions<T>
 ) => {
-  const { refetch: refreshToken } = useTokenRefresh();
-
   return useQuery({
     queryKey: key,
-    queryFn: async () => {
-      try {
-        return await queryFn();
-      } catch (error: unknown) {
-        const err = error as { response?: { status?: number } };
-        if (err.response?.status === 401 && TokenService.getToken()) {
-          await refreshToken();
-          return await queryFn();
-        }
-
-        console.log(error);
-        throw error;
-      }
-    },
+    queryFn,
     retry: (failureCount, error: unknown) => {
       const err = error as { response?: { status?: number } };
       if (err?.response?.status === 401) return false;
@@ -42,20 +25,7 @@ export const useAuthenticatedMutation = <T, V, C = unknown>(
   options: UseMutationOptions<T, Error, V, C> = {}
 ) => {
   return useMutation({
-    mutationFn: async (variables: V) => {
-      try {
-        return await mutationFn(variables);
-      } catch (error: unknown) {
-        const err = error as { response?: { status?: number } };
-        if (err.response?.status === 401 && TokenService.getToken()) {
-          // Try to refresh token and retry the mutation
-          console.log("Token expired, refreshing...");
-        }
-
-        console.log(error);
-        throw error;
-      }
-    },
+    mutationFn,
     retry: false,
     ...options,
   });

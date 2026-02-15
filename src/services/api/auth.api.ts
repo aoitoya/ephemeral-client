@@ -15,9 +15,4 @@ export const authAPI = {
     const response = await apiClient.post("/users/logout");
     return response.data;
   },
-
-  refreshToken: async () => {
-    const response = await apiClient.post("/users/refresh-token");
-    return response.data;
-  },
 } as const;
