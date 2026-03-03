@@ -26,6 +26,7 @@ export const useLogin = () => {
     mutationFn: authAPI.login,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      localStorage.setItem("logged_in", "true");
     },
   });
 };
@@ -37,6 +38,7 @@ export const useLogout = () => {
     mutationFn: authAPI.logout,
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: authKeys.all });
+      localStorage.setItem("logged_in", "true");
     },
   });
 };

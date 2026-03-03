@@ -8,6 +8,8 @@ import { userAPI } from "@/services/api/user.api";
 export const Route = createFileRoute("/_index")({
   beforeLoad: async () => {
     try {
+      const loggedId = localStorage.getItem('logged_in')
+      if (loggedId !== 'true') return
       await userAPI.getMe();
       throw redirect({ to: "/feed" });
     } catch (error) {

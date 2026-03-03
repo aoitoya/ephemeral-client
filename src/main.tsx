@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CssVarsProvider, extendTheme } from "@mui/joy/styles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import "./styles/globals.css";
-import { SocketProvider } from "./hooks/useSocket";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Create a new query client instance
@@ -153,9 +152,7 @@ if (!rootElement.innerHTML) {
       <QueryClientProvider client={queryClient}>
         <CssVarsProvider theme={theme} defaultMode="light">
           <CssBaseline />
-          <SocketProvider>
-            <RouterProvider router={router} />
-          </SocketProvider>
+          <RouterProvider router={router} />
         </CssVarsProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>

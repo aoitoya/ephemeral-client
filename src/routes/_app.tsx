@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Box } from "@mui/joy";
 import Sidebar from "@/components/layout/Sidebar";
-import { useSocketEvent } from "@/hooks/useSocket";
+import { SocketProvider, useSocketEvent } from "@/hooks/useSocket";
 import { AuthModalProvider } from "@/hooks/useAuthModal";
 
 export const Route = createFileRoute("/_app")({
@@ -33,7 +33,9 @@ function RouteComponent() {
             overflowY: "auto",
           }}
         >
-          <Outlet />
+          <SocketProvider>
+            <Outlet />
+          </SocketProvider>
         </Box>
       </Box>
     </AuthModalProvider>
