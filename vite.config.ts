@@ -33,6 +33,8 @@ export default defineConfig(({ mode }) => {
         },
         "/socket.io": {
           target: env.VITE_API_URL,
+          changeOrigin: true,
+          secure: true,
           ws: true,
         },
       },

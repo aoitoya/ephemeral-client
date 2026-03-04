@@ -6,14 +6,12 @@ import ChatView from "./ChatView";
 import type { Message } from "./types";
 import { useSocket, useSocketEvent } from "@/hooks/useSocket";
 import type { User } from "@/services/api/user.api";
-import { useConnectionsFetch } from "@/hooks/useConnection";
 
 export default function Messages() {
   const { socket, isConnected } = useSocket();
   const { data: currentUser } = useCurrentUser();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const { data: connections = [] } = useConnectionsFetch({ status: "active" });
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -104,6 +102,7 @@ export default function Messages() {
 
   const handleBackToUsers = () => {
     setShowSidebar(true);
+    setSelectedUser(null);
   };
 
   return (
@@ -174,7 +173,6 @@ export default function Messages() {
         }}
       >
         <UserList
-          users={connections.map((c) => c.user)}
           selectedUserId={selectedUser?.id}
           onSelectUser={handleSelectUser}
         />

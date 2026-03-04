@@ -1,21 +1,41 @@
-import { useOnlineConnectionsFetch } from "@/hooks/useConnection";
+import { useSocketEvent } from "@/hooks/socket-utils";
+import {
+  useConnectionsFetch,
+  useOnlineConnectionsFetch,
+} from "@/hooks/useConnection";
 import type { User } from "@/services/api/user.api";
 import { ListItemButton, Avatar, Typography, Box } from "@mui/joy";
+import { useEffect, useState } from "react";
 
 interface UserListProps {
-  users: User[];
   selectedUserId?: string;
   onSelectUser: (_user: User) => void;
 }
 
 export default function UserList({
-  users,
   selectedUserId,
   onSelectUser,
 }: UserListProps) {
+  const { data: connections = [] } = useConnectionsFetch({ status: "active" });
+  const users = connections.map((c) => c.user);
   const { data: onlineConnections = [] } = useOnlineConnectionsFetch();
+  const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
 
-  const onlineUserIds = new Set(onlineConnections.map((u) => u.id));
+  useEffect(() => {
+    setOnlineUserIds(new Set(onlineConnections.map((u) => u.id)));
+  }, [onlineConnections]);
+
+  useSocketEvent("user:online", (p: { id: string }) => {
+    setOnlineUserIds((pre) => new Set([...pre, p.id]));
+  });
+
+  useSocketEvent("user:offline", (p: { id: string }) => {
+    setOnlineUserIds((pre) => {
+      const next = new Set(pre);
+      next.delete(p.id);
+      return next;
+    });
+  });
 
   return (
     <Box

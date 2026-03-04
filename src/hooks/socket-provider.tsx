@@ -11,46 +11,48 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      const apiUrl = import.meta.env.VITE_API_URL || window.location.origin;
-
-      const newSocket = io(apiUrl, {
-        transports: ["websocket", "polling"],
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
-
-      newSocket.on("connect", () => {
-        setIsConnected(true);
-        setConnectionError(null);
-      });
-
-      newSocket.on("connect_error", (error) => {
-        setConnectionError(error.message);
-      });
-
-      newSocket.on("disconnect", () => {
-        setIsConnected(false);
-      });
-
-      newSocket.on("reconnect_attempt", (attempt) => {
-        console.log("Socket reconnection attempt:", attempt);
+      const newSocket = io("", {
+        withCredentials: true,
       });
 
       setSocket(newSocket);
 
       return () => {
         newSocket.close();
-      };
-    } else {
-      if (socket) {
-        socket.close();
         setSocket(null);
         setIsConnected(false);
         setConnectionError(null);
-      }
+      };
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnect = () => {
+      setIsConnected(true);
+      setConnectionError(null);
+    };
+
+    const handleConnectionError = (error: Error) => {
+      console.error(error);
+      setConnectionError(error.message);
+    };
+
+    const handleDisconnect = () => {
+      setIsConnected(false);
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("connect_error", handleConnectionError);
+    socket.on("disconnect", handleDisconnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("connect_error", handleConnectionError);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, [socket]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected, connectionError }}>
