@@ -1,20 +1,27 @@
-import { Box, Modal, IconButton } from "@mui/joy";
-import { Close as CloseIcon } from "@mui/icons-material";
+import {
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Link,
+  Modal,
+  ModalDialog,
+  Typography,
+} from "@mui/joy";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
-
 
 interface AuthModalProps {
   open: boolean;
   onClose: () => void;
   mode: "login" | "signup";
+  changeMode: (_: "login" | "signup") => void;
 }
-
 
 export function AuthModal({
   open,
   onClose,
   mode: currentMode,
+  changeMode,
 }: AuthModalProps) {
   return (
     <Modal
@@ -27,37 +34,33 @@ export function AuthModal({
         justifyContent: "center",
       }}
     >
-      <Box
-        sx={{
-          width: 450,
-          bgcolor: "background.surface",
-          borderRadius: "lg",
-          p: 4,
-          boxShadow: "lg",
-          position: "relative",
-          border: "1px solid rgba(102, 126, 234, 0.1)",
-        }}
-      >
-        <IconButton
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            color: "text.secondary",
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        <Box sx={{ mt: 2 }}>
+      <ModalDialog>
+        <DialogTitle>Pleas sign up to continue</DialogTitle>
+        <Divider />
+        <DialogContent>
           {currentMode === "login" ? (
-            <LoginForm />
+            <>
+              <LoginForm />
+              <Typography level="body-sm" textAlign="center">
+                New user?{" "}
+                <Link component="button" onClick={() => changeMode("signup")}>
+                  Signup
+                </Link>
+              </Typography>
+            </>
           ) : (
-            <SignupForm />
+            <>
+              <SignupForm />
+              <Typography level="body-sm" textAlign="center">
+                Already registered?{" "}
+                <Link component="button" onClick={() => changeMode("login")}>
+                  Login
+                </Link>
+              </Typography>
+            </>
           )}
-        </Box>
-      </Box>
+        </DialogContent>
+      </ModalDialog>
     </Modal>
   );
 }

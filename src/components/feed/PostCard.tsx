@@ -4,15 +4,17 @@ import {
   Card,
   CardContent,
   Typography,
-  IconButton,
   Avatar,
   Button,
+  Dropdown,
+  MenuButton,
+  Menu,
+  MenuItem,
 } from "@mui/joy";
 import {
   Favorite,
   HeartBroken,
   ChatBubbleOutline,
-  PersonAdd,
   MoreVert,
 } from "@mui/icons-material";
 import { formatDistanceToNow } from "date-fns";
@@ -101,14 +103,23 @@ export function PostCard({ post }: PostCardProps) {
                     })}
                   </Typography>
                 </Box>
-                <IconButton
-                  size="sm"
-                  variant="plain"
-                  color="neutral"
-                  sx={{ opacity: 0.5, "&:hover": { opacity: 1 } }}
-                >
-                  <MoreVert fontSize="small" />
-                </IconButton>
+                {currentUser && !isOwnPost && (
+                  <Dropdown>
+                    <MenuButton size="sm" variant="plain">
+                      <MoreVert fontSize="small" />
+                    </MenuButton>
+                    <Menu size="sm" variant="plain">
+                      <MenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsConnectionDialogOpen(true);
+                        }}
+                      >
+                        Send Connection Request
+                      </MenuItem>
+                    </Menu>
+                  </Dropdown>
+                )}
               </Box>
 
               <Typography
@@ -251,25 +262,6 @@ export function PostCard({ post }: PostCardProps) {
                 >
                   {post.commentCount || 0}
                 </Button>
-
-                {!isOwnPost && (
-                  <IconButton
-                    size="sm"
-                    variant="plain"
-                    color="neutral"
-                    title="Connect"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsConnectionDialogOpen(true);
-                    }}
-                    sx={{
-                      borderRadius: "50%",
-                      "&:hover": { bgcolor: "action.hover", color: "primary" },
-                    }}
-                  >
-                    <PersonAdd fontSize="small" />
-                  </IconButton>
-                )}
               </Box>
 
               {isExpanded && (

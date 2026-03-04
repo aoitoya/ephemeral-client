@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authAPI } from "@/services/api/auth.api";
 import { userAPI } from "@/services/api/user.api";
 import type { User } from "@/services/api/user.api";
+import { isLoggedIn } from "@/services/utils";
 
 export const authKeys = {
   all: ["auth"] as const,
@@ -45,6 +46,7 @@ export const useLogout = () => {
 
 export const useCurrentUser = () => {
   return useQuery<User>({
+    enabled: isLoggedIn(),
     queryKey: authKeys.user(),
     queryFn: () => userAPI.getMe(),
     retry: (failureCount, error: unknown) => {

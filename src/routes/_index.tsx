@@ -4,12 +4,12 @@ import { Box, Typography, Tabs, TabList, Tab, TabPanel } from "@mui/joy";
 import { LoginForm } from "../components/auth/LoginForm";
 import { SignupForm } from "../components/auth/SignupForm";
 import { userAPI } from "@/services/api/user.api";
+import { isLoggedIn } from "@/services/utils";
 
 export const Route = createFileRoute("/_index")({
   beforeLoad: async () => {
     try {
-      const loggedId = localStorage.getItem('logged_in')
-      if (loggedId !== 'true') return
+      if (!isLoggedIn()) return;
       await userAPI.getMe();
       throw redirect({ to: "/feed" });
     } catch (error) {

@@ -1,9 +1,5 @@
-// src/hooks/usePosts.ts
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  useAuthenticatedQuery,
-  useAuthenticatedMutation,
-} from "@/services/api-hooks";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuthenticatedMutation } from "@/services/api-hooks";
 import { postAPI, type Post } from "@/services/api/post.api";
 
 export interface CreatePost {
@@ -24,9 +20,9 @@ export const usePosts = () => {
     isLoading,
     error,
     refetch,
-  } = useAuthenticatedQuery(["posts"], async () => {
-    const response = await postAPI.getPosts();
-    return response;
+  } = useQuery({
+    queryKey: ["posts"],
+    queryFn: postAPI.getPosts,
   });
 
   const createPostMutation = useAuthenticatedMutation<
@@ -97,7 +93,11 @@ export const useVotePost = () => {
 
       return { previousPosts };
     },
-    onError: (_err: unknown, _variables: Vote, context?: { previousPosts?: Post[] }) => {
+    onError: (
+      _err: unknown,
+      _variables: Vote,
+      context?: { previousPosts?: Post[] },
+    ) => {
       if (context?.previousPosts) {
         queryClient.setQueryData(["posts"], context.previousPosts);
       }

@@ -3,6 +3,8 @@ import { Box, ListItemButton, Typography, useTheme } from "@mui/joy";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import PeopleOutlineRoundedIcon from "@mui/icons-material/PeopleOutlineRounded";
+import { isLoggedIn } from "@/services/utils";
+import { useMemo } from "react";
 // import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 
 interface NavItem {
@@ -10,25 +12,6 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
 }
-
-const navItems: NavItem[] = [
-  { to: "/feed", label: "Feed", icon: <HomeRoundedIcon /> },
-  {
-    to: "/messeges",
-    label: "Messages",
-    icon: <ChatBubbleOutlineRoundedIcon />,
-  },
-  {
-    to: "/connections",
-    label: "Connections",
-    icon: <PeopleOutlineRoundedIcon />,
-  },
-  // {
-  //   to: "/notifications",
-  //   label: "Notifications",
-  //   icon: <NotificationsRoundedIcon />,
-  // },
-];
 
 function NavLink({
   to,
@@ -66,6 +49,28 @@ function NavLink({
 export default function Sidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const loggedIn = useMemo(() => isLoggedIn(), []);
+
+  const navItems: NavItem[] = loggedIn
+    ? [
+        { to: "/feed", label: "Feed", icon: <HomeRoundedIcon /> },
+        {
+          to: "/messeges",
+          label: "Messages",
+          icon: <ChatBubbleOutlineRoundedIcon />,
+        },
+        {
+          to: "/connections",
+          label: "Connections",
+          icon: <PeopleOutlineRoundedIcon />,
+        },
+        // {
+        //   to: "/notifications",
+        //   label: "Notifications",
+        //   icon: <NotificationsRoundedIcon />,
+        // },
+      ]
+    : [{ to: "/feed", label: "Feed", icon: <HomeRoundedIcon /> }];
 
   return (
     <Box

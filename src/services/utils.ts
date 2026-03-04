@@ -47,3 +47,11 @@ export function handleApiErr(error: unknown): ErrResType {
     message: message || "Something went wrong",
   };
 }
+
+export function isLoggedIn() {
+  try {
+    return localStorage.getItem("logged_in") === "true";
+  } catch (error) {
+    console.log(error);
+  }
+}

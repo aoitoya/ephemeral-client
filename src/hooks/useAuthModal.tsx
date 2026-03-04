@@ -51,6 +51,7 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
         open={isAuthModalOpen}
         onClose={closeAuthModal}
         mode={authModalMode}
+        changeMode={openAuthModal}
       />
     </AuthModalContext.Provider>
   );
