@@ -11,7 +11,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      const newSocket = io("", {
+      const newSocket = io(import.meta.env.VITE_API_URL, {
         withCredentials: true,
       });
 
