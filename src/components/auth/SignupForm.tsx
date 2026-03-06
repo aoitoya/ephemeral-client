@@ -39,7 +39,7 @@ const signupSchema = Yup.object().shape({
     .required("Confirm password is required"),
 });
 
-export function SignupForm() {
+export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
   const { mutateAsync: register } = useRegister();
   const navigate = useNavigate();
 
@@ -50,8 +50,12 @@ export function SignupForm() {
   };
 
   const handleSubmit = async (values: SignupFormValues) => {
-    await register(values);
-    navigate({ to: "/feed" });
+    await register(values, {
+      onSuccess: () => {
+        onSuccess?.();
+        navigate({ to: "/feed" });
+      },
+    });
   };
 
   return (

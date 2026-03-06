@@ -40,7 +40,7 @@ export function AuthModal({
         <DialogContent>
           {currentMode === "login" ? (
             <>
-              <LoginForm />
+              <LoginForm onSuccess={onClose} />
               <Typography level="body-sm" textAlign="center">
                 New user?{" "}
                 <Link component="button" onClick={() => changeMode("signup")}>
@@ -50,7 +50,7 @@ export function AuthModal({
             </>
           ) : (
             <>
-              <SignupForm />
+              <SignupForm onSuccess={onClose} />
               <Typography level="body-sm" textAlign="center">
                 Already registered?{" "}
                 <Link component="button" onClick={() => changeMode("login")}>

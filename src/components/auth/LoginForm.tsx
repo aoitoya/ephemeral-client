@@ -29,7 +29,7 @@ interface ErrorResponse {
   message?: string;
 }
 
-export function LoginForm() {
+export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -41,14 +41,17 @@ export function LoginForm() {
 
   const handleSubmit = async (values: LoginFormValues) => {
     setLoginError(null);
-    try {
-      await login(values);
-      navigate({ to: "/feed" });
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: ErrorResponse } };
-      const message = err.response?.data?.message || "Login failed";
-      setLoginError(message);
-    }
+    await login(values, {
+      onSuccess: () => {
+        onSuccess?.();
+        navigate({ to: "/feed" });
+      },
+      onError: (error) => {
+        const err = error as { response?: { data?: ErrorResponse } };
+        const message = err.response?.data?.message || "Login failed";
+        setLoginError(message);
+      },
+    });
   };
 
   return (
