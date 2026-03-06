@@ -11,7 +11,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      const newSocket = io("", {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const newSocket = io(apiUrl || "/", {
         withCredentials: true,
       });
 
@@ -35,7 +36,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     const handleConnectionError = (error: Error) => {
-      console.error(error);
+      console.error("[socket error]", error);
       setConnectionError(error.message);
     };
 
